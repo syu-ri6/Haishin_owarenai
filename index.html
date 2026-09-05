@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.114 PROLOGUE AVATAR MATCH</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.115 EVENT FLOW CLARITY</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2624,7 +2624,21 @@ button,.side button,.comboArea,.comboBtn,.send,.quickClosing{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.114</div>
+
+<style id="v115-question-clarity">
+/* QUESTIONだけ、選択肢であることをUI上で明示する。ゲーム内容は変更しない。 */
+#eventMiniGame:not([hidden]) .eventMiniChoices button{
+  touch-action:manipulation;
+}
+.questionPulse{
+  white-space:nowrap;
+}
+.app:has(#currentEventName:not(:empty)) #talkInput::placeholder{
+  text-overflow:ellipsis;
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.115</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3008,8 +3022,22 @@ function updateCurrentEventHud(type=majorEventType||eventFlowType,phase=eventFlo
   const box=$('#currentEventHud'); if(!box)return;
   if(!type||phase==='idle'||ended){box.hidden=true;return;}
   const meta=EVENT_HUD_META[type]||{icon:'⚡',name:String(type||'EVENT').toUpperCase(),task:'イベントに対応してください'};
-  const [step,defaultTask]=eventStepInfo(phase);
+  let [step,defaultTask]=eventStepInfo(phase);
   let task=phase==='minigame'||phase==='minigame_pending'?defaultTask:meta.task;
+
+  // Question event uses a deliberately simple 2-step interaction.
+  if(type==='question'){
+    if(phase==='intro_title'||phase==='intro_explain'||phase==='minigame_pending'||phase==='minigame'){
+      step='STEP 1 / 2';
+      task='① 紫の3つは選択肢。質問になっているコメントを1つタップ';
+    }else if(phase==='response'||phase==='response_timeout'){
+      step='STEP 2 / 2';
+      task='② 下の入力欄に答えを書いて「送信」';
+    }else if(phase==='complete'){
+      step='CLEAR';
+      task='質問への対応完了';
+    }
+  }
   if(type==='question'&&(phase==='response'||phase==='response_timeout')){
     task='コメント欄に出た質問へ、入力欄から自由に答えてね';
   }
@@ -3495,13 +3523,17 @@ function triggerRomFirstCommentEvent({ending=false}={}){
             addSystemComment('希少コメントを観測。回収には失敗しました。');
           }
 
-          unlockComposerForEvent();
-          endMajorEvent('rom');
-
-          if(closingChallengeType==='rom'){
-            markClosingChallengeHandled('rom');
-          }
+          setEventFlowPhase('rom','complete');
           sync();
+
+          setTimeout(()=>{
+            if(ended||majorEventType!=='rom')return;
+            unlockComposerForEvent();
+            endMajorEvent('rom');
+            if(closingChallengeType==='rom'){
+              markClosingChallengeHandled('rom');
+            }
+          },750);
         }
       });
     }
@@ -3680,7 +3712,7 @@ function finishNameCallEvent(outcome){
     endMajorEvent('name');
     nameCallChain=0;
     sync();
-  },delay);
+  },Math.max(delay,1750));
 
   if(outcome==='refuse'){
     recordMiniGameResult('name',false);
@@ -3692,7 +3724,7 @@ function finishNameCallEvent(outcome){
     playReplies([
       {name:'みるく',text:'えー！🥺',persona:'kind'},
       {name:'ねこ',text:'拒否されたww',persona:'chaos'}
-    ]);
+    ],'name');
     $('#eventMiniStatus').textContent='MISS　空気がちょっと冷えた…';
     settle(1000);
     return;
@@ -3709,7 +3741,7 @@ function finishNameCallEvent(outcome){
     playReplies([
       {name:'たろ',text:'はい解散〜！',persona:'tease'},
       {name:'momo',text:'ありがとー！',persona:'warm'}
-    ]);
+    ],'name');
     addSystemComment('公平な対応を確認。終了タイミングが改善しました。');
     $('#eventMiniStatus').textContent='GOOD！　きれいにまとまった';
     settle(900);
@@ -3727,7 +3759,7 @@ function finishNameCallEvent(outcome){
     playReplies([
       {name:'みるく',text:'わーい！ありがとう！',persona:'kind'},
       {name:'momo',text:'満足☺️',persona:'warm'}
-    ]);
+    ],'name');
     addSystemComment('全員の満足度が上昇しました。なお、配信時間も増加しました。');
     $('#eventMiniStatus').textContent='満足度 大UP！　でも時間が溶けた…';
     settle(1750);
@@ -3746,7 +3778,7 @@ function finishNameCallEvent(outcome){
       {name:'みるく',text:'名前入ってる！うれしい！',persona:'kind'},
       {name:'たろ',text:'高速点呼つよww',persona:'tease'},
       {name:'ねこ',text:'全員回収されたww',persona:'chaos'}
-    ]);
+    ],'name');
     addSystemComment('SPECIAL CALL成功。高満足度・短時間で名前呼びを完了しました。');
     const box=$('#eventMiniGame');
     const result=$('#eventMiniStatus');
@@ -3769,7 +3801,7 @@ function finishNameCallEvent(outcome){
     {name:'たろ',text:'俺も呼んで！',persona:'tease',eventKey:true},
     {name:'ねこ',text:'私も呼んでー！ww',persona:'chaos',eventKey:true},
     {name:'momo',text:'はい🙋‍♀️ 私も！',persona:'warm',eventKey:true}
-  ]);
+  ],'name');
   addSystemComment(`名前呼び要求が増殖しています。NAME CALL ×${nameCallChain+1}`);
   $('#eventMiniStatus').textContent=`CHAIN ×${nameCallChain+1}　まだ動けない！`;
 
@@ -3888,7 +3920,7 @@ function triggerNameCallEvent(){
       playReplies([
         {name:'みるく',text:'最後に名前呼んでー！',persona:'kind',eventKey:true},
         {name:'ねこ',text:'始まったww',persona:'chaos'}
-      ]);
+      ],'name');
       startNameCallSlot();
     }
   );
@@ -6091,11 +6123,13 @@ async function generateCommentResponse(v,replyContext=null){
     return {analysis,replies};
   }
 }
-async function playReplies(items){
+async function playReplies(items,eventGuardType=null){
   $('#typing').classList.add('show');
   await new Promise(r=>setTimeout(r,420+Math.random()*280));
   $('#typing').classList.remove('show');
+  if(eventGuardType && majorEventType!==eventGuardType)return;
   items.forEach((c,i)=>setTimeout(()=>{
+    if(eventGuardType && majorEventType!==eventGuardType)return;
     addComment(c.name,c.text,{persona:c.persona,eventKey:c.eventKey});
     conversation.history.push({role:'listener',name:c.name,text:c.text,time:Date.now()});
     conversation.history=conversation.history.slice(-18);
@@ -6255,7 +6289,10 @@ function startQuestionThread({ending=false}={}){
   const q=buildNaturalQuestion();
   conversation.activeQuestion={asker,text:q,startedAt:Date.now(),ending};
 
-  if($('#questionState'))$('#questionState').hidden=false;
+  if($('#questionState')){
+    $('#questionState').hidden=false;
+    $('#questionState').textContent='💬 QUESTION ① 選ぶ';
+  }
   conversation.threadDepth=0;
   conversation.unresolved=Math.min(8,conversation.unresolved+1);
   conversation.topicPressure=Math.min(100,conversation.topicPressure+(ending?13:8));
@@ -6263,12 +6300,12 @@ function startQuestionThread({ending=false}={}){
   showEventIntroSequence(
     '',
     ending?'最後の質問が来た！':'質問が来た！',
-    '流れるコメントの中から、“質問になっているコメント”をタップしよう！ 正解するとその質問がコメント欄に表示されるよ。そのあと入力欄から自由に答えてね。',
+    '① 紫の3つは選択肢。質問になっているコメントを1つタップ！ ② 質問GET後は、下の入力欄に答えを書いて「送信」しよう。',
     ()=>{
       startChoiceMiniGame({
         type:'question',
-        title:'質問を拾え！',
-        prompt:'“質問になっているコメント”をタップ！ 正解後は入力欄から自由に回答',
+        title:'STEP 1 / 2　質問を選ぶ',
+        prompt:'紫の3つは選択肢！ “質問になっているコメント”を1つタップ',
         choices:[
           {text:q,correct:true},
           {text:'それなww',correct:false},
@@ -6278,8 +6315,18 @@ function startQuestionThread({ending=false}={}){
           if(ended)return;
 
           addComment(asker,q,{persona:(listeners[asker]||{}).persona||'',eventKey:true});
-          toast('次は入力欄から、この質問に自由に答えてね！');
-          addSystemComment('質問を取得しました。入力欄から自由に回答してください。');
+          setEventFlowPhase('question','response');
+          if($('#questionState')){
+            $('#questionState').hidden=false;
+            $('#questionState').textContent='💬 QUESTION ② 回答';
+          }
+          const questionInput=$('#talkInput');
+          if(questionInput){
+            questionInput.placeholder='この質問への回答を入力…';
+            questionInput.focus();
+          }
+          toast('QUESTION 2 / 2：下の入力欄に答えを書いて「送信」！');
+          addSystemComment('質問GET！ 下の入力欄に答えを書いて「送信」してください。');
           conversation.history.push({role:'listener',name:asker,text:q,time:Date.now(),kind:'question'});
           conversation.history=conversation.history.slice(-24);
 
@@ -6294,7 +6341,11 @@ function startQuestionThread({ending=false}={}){
             if(conversation.activeQuestion.startedAt!==questionStamp)return;
 
             conversation.activeQuestion=null;
-            if($('#questionState'))$('#questionState').hidden=true;
+            if($('#questionState')){
+              $('#questionState').hidden=true;
+              $('#questionState').textContent='💬 QUESTION';
+            }
+            if($('#talkInput'))$('#talkInput').placeholder='配信者として話す…';
             conversation.unresolved=Math.max(0,conversation.unresolved-1);
             conversation.topicPressure=Math.max(0,conversation.topicPressure-5);
             endMajorEvent('question');
@@ -6303,7 +6354,10 @@ function startQuestionThread({ending=false}={}){
             if(closingChallengeType==='question')clearClosingChallenge();
           },18000);
 
+          const questionEventStamp=conversation.activeQuestion?.startedAt||0;
           setTimeout(()=>{
+            if(ended||majorEventType!=='question')return;
+            if(!conversation.activeQuestion||conversation.activeQuestion.startedAt!==questionEventStamp)return;
             addComment('たろ',ending?'最後って言った人ほど質問するww':'それ聞くんだww',{persona:'tease'});
           },360);
 
@@ -6367,7 +6421,11 @@ function answerActiveQuestion(v){
       if(ended)return;
       if(!conversation.activeQuestion||conversation.activeQuestion.startedAt!==followStamp)return;
       conversation.activeQuestion=null;
-      if($('#questionState'))$('#questionState').hidden=true;
+      if($('#questionState')){
+        $('#questionState').hidden=true;
+        $('#questionState').textContent='💬 QUESTION';
+      }
+      if($('#talkInput'))$('#talkInput').placeholder='配信者として話す…';
       conversation.unresolved=Math.max(0,conversation.unresolved-1);
       conversation.topicPressure=Math.max(0,conversation.topicPressure-5);
       endMajorEvent('question');
@@ -6377,11 +6435,21 @@ function answerActiveQuestion(v){
   }else{
     conversation.activeQuestion=null;
     clearTimeout(activeQuestionExpiryTimer);
-    if($('#questionState'))$('#questionState').hidden=true;
+    if($('#questionState')){
+      $('#questionState').hidden=true;
+      $('#questionState').textContent='💬 QUESTION';
+    }
+    if($('#talkInput'))$('#talkInput').placeholder='配信者として話す…';
     conversation.unresolved=Math.max(0,conversation.unresolved-1);
     conversation.topicPressure=Math.max(0,conversation.topicPressure-6);
-    endMajorEvent('question');
-    if(closingChallengeType==='question')markClosingChallengeHandled('question');
+    setEventFlowPhase('question','complete');
+
+    // Keep the event owned until the answer reactions have had time to appear.
+    setTimeout(()=>{
+      if(ended||majorEventType!=='question')return;
+      endMajorEvent('question');
+      if(closingChallengeType==='question')markClosingChallengeHandled('question');
+    },1450);
   }
   return out;
 }
@@ -6700,18 +6768,26 @@ function triggerFirstViewerEvent({ending=false}={}){
           if(ended)return;
 
           addComment('初見さん',ending?'初見です！今来ました！':'初見です！こんばんは〜',{persona:'first',eventKey:true});
-          setTimeout(()=>addComment(
-            'ねこ',
-            grade==='PERFECT'?'距離感プロww':grade==='GOOD'?'いい感じじゃん':'距離感むずww',
-            {persona:'chaos'}
-          ),260);
+          setTimeout(()=>{
+            if(ended||majorEventType!=='first')return;
+            addComment(
+              'ねこ',
+              grade==='PERFECT'?'距離感プロww':grade==='GOOD'?'いい感じじゃん':'距離感むずww',
+              {persona:'chaos'}
+            );
+          },260);
+
+          setTimeout(()=>{
+            if(ended||majorEventType!=='first')return;
+            setEventFlowPhase('first','complete');
+          },650);
 
           setTimeout(()=>{
             if(!currentContextAction && majorEventType==='first'){
               unlockComposerForEvent();
               endMajorEvent('first');
             }
-          },1000);
+          },1050);
         }
       });
     }
