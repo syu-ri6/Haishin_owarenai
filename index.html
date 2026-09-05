@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.112 AVATAR UP</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.114 PROLOGUE AVATAR MATCH</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -1045,7 +1045,7 @@
 <style id="v257-event-control-fix">
 /* Event notices should inform, not cover the game. */
 .eventBanner{
-  top:28.5%!important;
+  top:27.0%!important;
   width:min(76%,330px)!important;
   padding:9px 12px!important;
   border-radius:16px!important;
@@ -2561,7 +2561,7 @@ button,.side button,.comboArea,.comboBtn,.send,.quickClosing{
   position:absolute!important;
   left:50%!important;
   transform:translateX(-50%)!important;
-  top:29.2%!important;
+  top:27.8%!important;
   width:min(92vw,425px)!important;
   height:auto!important;
   z-index:8!important;
@@ -2586,7 +2586,45 @@ button,.side button,.comboArea,.comboBtn,.send,.quickClosing{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.112</div>
+
+<style id="v114-prologue-avatar-match">
+/* Approved title-screen avatar baseline */
+.v101Story .storyAvatar,
+.v101Storm .storyAvatar,
+.v101Final .storyAvatar{
+  position:absolute!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  top:27.8%!important;
+  width:min(92vw,425px)!important;
+  height:auto!important;
+  z-index:8!important;
+  opacity:1!important;
+  filter:drop-shadow(0 14px 24px rgba(45,26,100,.28))!important;
+}
+
+/* Final prologue can stay slightly dimmed, but not move. */
+.v101Final .storyAvatar.dim{
+  top:27.8%!important;
+  width:min(92vw,425px)!important;
+  opacity:.72!important;
+}
+
+@media(max-height:720px){
+  .v101Story .storyAvatar,
+  .v101Storm .storyAvatar,
+  .v101Final .storyAvatar{
+    top:27%!important;
+    width:min(86vw,395px)!important;
+  }
+  .v101Final .storyAvatar.dim{
+    top:27%!important;
+    width:min(86vw,395px)!important;
+  }
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.114</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
