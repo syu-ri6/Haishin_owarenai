@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.129 UI CLEANUP & EASY QUESTIONS</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.130 QUESTION FLOW HOTFIX</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2926,7 +2926,6 @@ body.postMiniGameInputLock .quickActions{
 </style>
 
 
-/* ===== Ver.2.129: FX kept for future hidden-route use; ENDING FLOW moved away ===== */
 <style id="v129-ending-flow-position">
 .endingProgressHud{
   right:auto!important;
@@ -2942,7 +2941,15 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.129</div>
+
+<style id="v130-question-hotfix">
+.app.voicePlayMode #v116VoiceReply.questionVoiceReady{
+  box-shadow:0 0 0 2px rgba(255,224,244,.28),0 0 24px rgba(255,91,176,.72);
+  animation:v130QuestionMicPulse .7s ease-in-out infinite alternate;
+}
+@keyframes v130QuestionMicPulse{from{transform:scale(1)}to{transform:scale(1.045)}}
+</style>
+</head><body><div class="app" id="app"><div class="buildMark">v2.130</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -7030,9 +7037,14 @@ function startQuestionThread({ending=false}={}){
 
     unlockComposerForEvent();
     toast('質問GET！ ここから自分で回答！');
+    if(v116PlayMode==='voice'){
+      const vs=$('#v116VoiceStatus');
+      if(vs)vs.textContent='🎙 質問に答える → 文字を確認 → 送信';
+      $('#v116VoiceReply')?.classList.add('questionVoiceReady');
+    }
     addSystemComment(
-      window.v116InputMode==='voice'
-        ? '質問GET！ マイクで答えてね。'
+      v116PlayMode==='voice'
+        ? '質問GET！ マイクを押して答えてね。文字になったら最後に「送信」！'
         : '質問GET！ 下の入力欄から答えてね。'
     );
 
@@ -7090,7 +7102,7 @@ function startQuestionThread({ending=false}={}){
       {name:'みるく',text:'今日ずっと笑ってるww',correct:false},
       {name:'ねこ',text:'このまま終われるかな',correct:false}
     ];
-    const dummies=shuffle([...dummyPool]).slice(0,2);
+    const dummies=[...dummyPool].sort(()=>Math.random()-.5).slice(0,2);
     const options=[
       {name:asker,text:q,correct:true},
       ...dummies
@@ -8122,6 +8134,7 @@ async function sendTalk(){
   addComment('配信者',v);
   $('#talkInput').value='';
   $('#send')?.classList.remove('v128MicReadyToSend');
+  $('#v116VoiceReply')?.classList.remove('questionVoiceReady');
   if(v116PlayMode==='voice' && $('#v116VoiceStatus')){
     $('#v116VoiceStatus').textContent='🎙 話す → 文字を確認 → 送信';
   }
