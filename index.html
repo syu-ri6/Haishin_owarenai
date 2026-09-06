@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.119 OK STAYS VISIBLE</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.120 OK REALLY GATES EVENT</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2734,7 +2734,17 @@ button,.side button,.comboArea,.comboBtn,.send,.quickClosing{
 .eventBanner.confirmMode #eventDesc{display:block!important;white-space:normal!important;overflow:visible!important;max-height:none!important}
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.119</div>
+
+<style id="v120-ok-hard-lock">
+.eventBanner.confirmMode .eventOkBtn:not([hidden]){
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  pointer-events:auto!important;
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.120</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3466,6 +3476,14 @@ function guaranteeMiniGameForEvent(kind){
     if(ended)return;
     if(!majorEventType || majorEventType!==token)return;
     if(eventMiniGameVisibleFor(kind))return;
+
+    // IMPORTANT: the hard fallback must NEVER jump past the user's OK gate.
+    // While the event explanation is on screen, simply wait and re-check later.
+    const confirmOpen=$('#eventBanner')?.classList.contains('confirmMode');
+    if(eventFlowPhase==='intro_title' || eventFlowPhase==='intro_explain' || confirmOpen){
+      guaranteeMiniGameForEvent(kind);
+      return;
+    }
 
     console.warn('[MINIGAME] hard guarantee fallback',kind,eventFlowPhase);
     setEventFlowPhase(kind,'minigame_pending');
