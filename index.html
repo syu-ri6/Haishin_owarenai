@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.116 STREAMER REPLAY FOUNDATION</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.118 OK TO START</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2666,7 +2666,75 @@ button,.side button,.comboArea,.comboBtn,.send,.quickClosing{
 /* Keyboard must only float UI while a real keyboard is present. */
 .app:not(.keyboardOpen) .actionZone,.app:not(.keyboardOpen) .commentsPanel{transform:none!important}
 </style>
-</head><body><div class="app" id="app"><div class="buildMark">v2.116</div>
+
+<style id="v117-event-text-readability">
+/* Event text visibility fix only. */
+.eventMiniGame p,
+.distanceMini p{
+  font-size:14px!important;
+  line-height:1.55!important;
+  color:#fff!important;
+  font-weight:800!important;
+  padding:9px 10px!important;
+  margin:6px 0 10px!important;
+  border-radius:11px!important;
+  background:rgba(255,255,255,.08)!important;
+  border:1px solid rgba(255,255,255,.12)!important;
+}
+.v117EventSource{
+  display:block;
+  margin:7px 0 10px;
+  padding:10px 11px;
+  border-radius:12px;
+  background:linear-gradient(180deg,rgba(255,238,171,.16),rgba(255,255,255,.08));
+  border:1px solid rgba(255,227,132,.48);
+  box-shadow:0 0 0 1px rgba(255,255,255,.03) inset;
+}
+.v117EventSource[hidden]{display:none!important}
+.v117EventSource small{
+  display:block!important;
+  margin:0 0 4px!important;
+  font-size:8px!important;
+  color:#ffe58f!important;
+  letter-spacing:.12em!important;
+  font-weight:1000!important;
+}
+.v117EventSource b{
+  display:block;
+  font-size:15px;
+  line-height:1.5;
+  color:#fff;
+  font-weight:1000;
+  white-space:normal;
+  overflow-wrap:anywhere;
+}
+.eventMiniGame.v116Reading .v117EventSource,
+.distanceMini.v116Reading .v117EventSource{
+  box-shadow:0 0 0 2px rgba(255,227,132,.52),0 8px 24px rgba(0,0,0,.22);
+}
+.eventBanner span{
+  font-size:13px!important;
+  line-height:1.5!important;
+  font-weight:800!important;
+  color:#fff!important;
+}
+@media(max-width:430px){
+  .eventMiniGame,.distanceMini{width:calc(100vw - 20px)!important;padding:13px!important}
+  .eventMiniGame strong,.distanceMini strong{font-size:19px!important}
+  .v117EventSource b{font-size:14px!important}
+}
+</style>
+
+
+<style id="v118-event-ok-gate">
+.eventBanner.confirmMode{pointer-events:auto!important;padding-bottom:14px!important}
+.eventOkBtn{display:block;width:100%;margin-top:11px;min-height:44px;border:0;border-radius:12px;background:linear-gradient(180deg,#ff72cc,#ff4fbd);color:#fff;font-size:16px;font-weight:1000;letter-spacing:.08em;box-shadow:0 8px 22px rgba(255,79,189,.30),inset 0 1px rgba(255,255,255,.38);touch-action:manipulation}
+.eventOkBtn[hidden]{display:none!important}
+.eventOkBtn:active{transform:translateY(1px) scale(.995)}
+.eventBanner.confirmMode #eventDesc{display:block!important;white-space:normal!important;overflow:visible!important;max-height:none!important}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.118</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -2828,7 +2896,7 @@ button,.side button,.comboArea,.comboBtn,.send,.quickClosing{
   </div>
   <div class="currentEventStep" id="currentEventStep">STEP 1 / 4</div>
 </div>
-<div class="eventBanner" hidden="" id="eventBanner"><small id="eventMini">EVENT</small><strong id="eventTitle">初見さんが来た！</strong><span id="eventDesc">自己紹介するか、切るかで揺れる…</span></div>
+<div class="eventBanner" hidden="" id="eventBanner"><small id="eventMini">EVENT</small><strong id="eventTitle">初見さんが来た！</strong><span id="eventDesc">自己紹介するか、切るかで揺れる…</span><button type="button" id="eventOkBtn" class="eventOkBtn" hidden>OK</button></div>
 <div class="eventMiniGame" hidden id="eventMiniGame" aria-live="polite">
   <small id="miniGameLabel">MINI GAME</small>
   <strong id="miniGameTitle">反応しろ！</strong>
@@ -3273,19 +3341,18 @@ function showEventIntroSequence(kind,title,desc,onDone){
   const type=majorEventType||eventFlowType||kind||'event';
 
   setEventFlowPhase(type,'intro_title');
-  showEventBanner(kind,title,'',900);
+  showEventBanner(kind,title,'',760);
 
   setTimeout(()=>{
     if(ended||token!==eventIntroSequenceToken)return;
     setEventFlowPhase(type,'intro_explain');
-    showEventBanner(kind,'どうする？',desc,1050);
-
-    setTimeout(()=>{
+    showEventConfirm(kind,'どうする？',desc,()=>{
       if(ended||token!==eventIntroSequenceToken)return;
       setEventFlowPhase(type,'minigame_pending');
+      window.__eventOkConfirmedType=type;
       if(onDone)onDone();
-    },1320);
-  },1180);
+    });
+  },900);
 }
 
 function shuffleMiniChoices(items){
@@ -3314,8 +3381,23 @@ function startDistanceMiniGame({type='first',title='距離感を合わせろ！'
   const lock=$('#distanceLock');
 
   $('#distanceTitle').textContent=title;
-  $('#distancePrompt').textContent=prompt;
-  result.innerHTML='まずコメントを読もう <span class="v116ReadTag">READ</span>';
+
+  let distanceSource=el.querySelector('.v117EventSource');
+  if(!distanceSource){
+    distanceSource=document.createElement('div');
+    distanceSource.className='v117EventSource';
+    $('#distanceTitle').insertAdjacentElement('afterend',distanceSource);
+  }
+  const quoted=String(prompt||'').match(/^(.*?」)/);
+  if(quoted){
+    distanceSource.innerHTML=`<small>発生コメント</small><b>${quoted[1]}</b>`;
+    distanceSource.hidden=false;
+    $('#distancePrompt').textContent=String(prompt).slice(quoted[1].length).trim();
+  }else{
+    distanceSource.hidden=true;
+    $('#distancePrompt').textContent=prompt;
+  }
+  result.innerHTML='まず文章を読もう <span class="v116ReadTag">READ</span>';
 
   const startValue=42+Math.floor(Math.random()*17);
   range.value=startValue;
@@ -3371,7 +3453,10 @@ function startDistanceMiniGame({type='first',title='距離感を合わせろ！'
 
   el.hidden=false;
   notifyMiniGameVisible(type);
-  setTimeout(()=>{if(finished||ended)return;v116Armed=true;range.disabled=false;lock.disabled=false;el.classList.remove('v116Reading');result.textContent='距離を決めて！';distanceMiniTimer=setTimeout(()=>finish('MISS'),timeout);},V116_READ_GRACE);
+  const confirmed=window.__eventOkConfirmedType===type;
+  if(confirmed)window.__eventOkConfirmedType=null;
+  const armDistance=()=>{if(finished||ended)return;v116Armed=true;range.disabled=false;lock.disabled=false;el.classList.remove('v116Reading');result.textContent='距離を決めて！';distanceMiniTimer=setTimeout(()=>finish('MISS'),timeout);};
+  if(confirmed)armDistance(); else setTimeout(armDistance,V116_READ_GRACE);
 }
 
 function guaranteeMiniGameForEvent(kind){
@@ -3439,7 +3524,21 @@ function startChoiceMiniGame({type,title,prompt,choices,timeout=4300,onDone}){
   $('#miniGameLabel').textContent=type==='first'?'FIRST CONTACT':type==='question'?'QUESTION CATCH':type==='name'?'NAME CALL':type==='rom'?'ROM FIRST COMMENT':type==='five'?'5 MINUTE SURVIVAL':'MINI GAME';
   $('#miniGameTitle').textContent=title;
   $('#miniGamePrompt').textContent=prompt;
-  $('#eventMiniStatus').innerHTML='まず内容を読もう <span class="v116ReadTag">READ</span>';
+
+  // Show the actual event comment separately during the reading grace.
+  const correctChoice=(choices||[]).find(c=>c.correct);
+  let sourcePreview=el.querySelector('.v117EventSource');
+  if(!sourcePreview){
+    sourcePreview=document.createElement('div');
+    sourcePreview.className='v117EventSource';
+    el.insertBefore(sourcePreview,wrap);
+  }
+  sourcePreview.innerHTML=correctChoice
+    ? `<small>発生コメント</small><b>${correctChoice.text}</b>`
+    : '';
+  sourcePreview.hidden=!correctChoice;
+
+  $('#eventMiniStatus').innerHTML='まず文章を読もう <span class="v116ReadTag">READ</span>';
   wrap.innerHTML='';
   let finished=false,armed=false,deadline=0;
   const finishMini=(success)=>{
@@ -3450,10 +3549,13 @@ function startChoiceMiniGame({type,title,prompt,choices,timeout=4300,onDone}){
   };
   shuffleMiniChoices(choices).forEach(c=>{const b=document.createElement('button');b.type='button';b.textContent=c.text;b.disabled=true;b.onclick=()=>{if(finished||!armed)return;if(c.correct){b.classList.add('correct');finishMini(true)}else{b.classList.add('wrong');finishMini(false)}};wrap.appendChild(b)});
   el.hidden=false;el.classList.add('v116Reading');$('#eventMiniBar').style.transform='scaleX(1)';notifyMiniGameVisible(type);
-  setTimeout(()=>{if(finished||ended)return;armed=true;el.classList.remove('v116Reading');[...wrap.querySelectorAll('button')].forEach(b=>b.disabled=false);$('#eventMiniStatus').textContent='いま！';deadline=Date.now()+timeout;
+  const confirmed=window.__eventOkConfirmedType===type;
+  if(confirmed)window.__eventOkConfirmedType=null;
+  const armChoice=()=>{if(finished||ended)return;armed=true;el.classList.remove('v116Reading');[...wrap.querySelectorAll('button')].forEach(b=>b.disabled=false);$('#eventMiniStatus').textContent='いま！';deadline=Date.now()+timeout;
     eventMiniGameTick=setInterval(()=>{const remain=Math.max(0,deadline-Date.now());$('#eventMiniBar').style.transform=`scaleX(${remain/timeout})`;if(remain<=0)finishMini(false)},50);
     eventMiniGameTimer=setTimeout(()=>finishMini(false),timeout+100);
-  },V116_READ_GRACE);
+  };
+  if(confirmed)armChoice(); else setTimeout(armChoice,V116_READ_GRACE);
   eventMiniWatchdog=setTimeout(()=>{if(finished||ended)return;if(el.hidden){console.warn('[MINIGAME] visibility recovery',type);el.hidden=false;notifyMiniGameVisible(type)}},900);
 }
 
@@ -3912,6 +4014,14 @@ function startNameCallSlot({chain=false}={}){
   $('#miniGameLabel').textContent=chain?`NAME CALL CHAIN ×${nameCallChain+1}`:'NAME CALL SLOT';
   $('#miniGameTitle').textContent=chain?'まだ終わってない！':'返事スロットを止めろ！';
   $('#miniGamePrompt').textContent='STOPした瞬間の返事が、そのまま実行されます。';
+  let nameSource=el.querySelector('.v117EventSource');
+  if(!nameSource){
+    nameSource=document.createElement('div');
+    nameSource.className='v117EventSource';
+    el.insertBefore(nameSource,wrap);
+  }
+  nameSource.hidden=false;
+  nameSource.innerHTML=`<small>発生コメント</small><b>${chain?'私も呼んでー！':'最後に名前呼んでー！'}</b>`;
   $('#eventMiniStatus').textContent='';
   $('#eventMiniStatus').classList.remove('special');
   $('#eventMiniBar').style.transform='scaleX(1)';
@@ -3989,7 +4099,9 @@ function startNameCallSlot({chain=false}={}){
     if(el.hidden){el.hidden=false;notifyMiniGameVisible('name')}
   },900);
 
-  setTimeout(v116StartSlot,V116_READ_GRACE);
+  const confirmed=window.__eventOkConfirmedType==='name';
+  if(confirmed)window.__eventOkConfirmedType=null;
+  if(confirmed)v116StartSlot(); else setTimeout(v116StartSlot,V116_READ_GRACE);
 }
 
 function triggerNameCallEvent(){
@@ -6800,6 +6912,7 @@ $('#fx').onclick=()=>{
 let introSeen=false,eventBannerTimer=null,inputLocked=false,giftChallenge=null;
 function showEventBanner(kind,title,desc,duration=520){
   const el=$('#eventBanner'); if(!el) return;
+  const ok=$('#eventOkBtn'); if(ok){ok.hidden=true;ok.onclick=null;ok.disabled=false;}
   el.className='eventBanner '+(kind||'');
   $('#eventMini').textContent=kind==='gift'?'GIFT EVENT':kind==='beginner'?'FIRST VIEWER':'EVENT';
   $('#eventTitle').textContent=title; $('#eventDesc').textContent=desc;
@@ -6810,6 +6923,23 @@ function showEventBanner(kind,title,desc,duration=520){
     el.classList.remove('show');
     setTimeout(()=>el.hidden=true,180);
   },duration);
+}
+
+function showEventConfirm(kind,title,desc,onOk){
+  const el=$('#eventBanner'); if(!el){if(onOk)onOk();return;}
+  const ok=$('#eventOkBtn');
+  clearTimeout(eventBannerTimer); eventBannerTimer=null;
+  el.className='eventBanner '+(kind||'')+' confirmMode';
+  $('#eventMini').textContent=kind==='gift'?'GIFT EVENT':kind==='beginner'?'FIRST VIEWER':'EVENT';
+  $('#eventTitle').textContent=title; $('#eventDesc').textContent=desc;
+  el.hidden=false; requestAnimationFrame(()=>el.classList.add('show'));
+  if(!ok){if(onOk)onOk();return;}
+  ok.hidden=false; ok.disabled=false; ok.textContent='OK';
+  ok.onclick=()=>{
+    ok.disabled=true; ok.hidden=true; ok.onclick=null;
+    el.classList.remove('show','confirmMode');
+    setTimeout(()=>{el.hidden=true;ok.disabled=false;if(onOk)onOk();},160);
+  };
 }
 
 function triggerFirstViewerEvent({ending=false}={}){
@@ -7223,18 +7353,16 @@ function receiveGift(isEndingInterrupt=false,meta={}){
   $('.app')?.classList.add('giftIntroShowing');
   $('#giftHud').hidden=true;
   hideContextActions();
-  showEventBanner('gift','ギフトが来た！','演出が終わるまで、ちょっと切りづらい…。',1100);
-
-  addGiftArrivalComment(giftState.lastGiver);
-  giftIntentComment(giftState.lastGiver,giftState.lastIntent);
-
-  setTimeout(()=>{
+  showEventConfirm('gift','ギフトが来た！','演出が終わるまで、ちょっと切りづらい…。内容を確認したらOK！',()=>{
     if(ended || !giftState.active)return;
     $('.app')?.classList.remove('giftIntroShowing');
     giftState.endAt=Date.now()+giftState.duration;
     startGiftDisplay();
     startGiftChallenge();
-  },1280);
+  });
+
+  addGiftArrivalComment(giftState.lastGiver);
+  giftIntentComment(giftState.lastGiver,giftState.lastIntent);
 
   viewers+=Math.floor(Math.random()*3)+1;
   commentRate=Math.max(commentRate,34);
