@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.128 MIC UX & HELP HUB</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.129 UI CLEANUP & EASY QUESTIONS</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2890,7 +2890,59 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.128</div>
+
+<style id="v129-settings-modal-fix">
+.modal{
+  position:absolute!important;
+  inset:0!important;
+  z-index:400!important;
+  background:rgba(10,8,28,.78)!important;
+  backdrop-filter:blur(8px)!important;
+  -webkit-backdrop-filter:blur(8px)!important;
+  align-items:center!important;
+  justify-content:center!important;
+  padding:calc(72px + env(safe-area-inset-top)) 14px calc(18px + env(safe-area-inset-bottom))!important;
+}
+.modal.show{display:flex!important}
+.modal .sheet{
+  width:min(92%,390px)!important;
+  max-height:min(72svh,640px)!important;
+  overflow-y:auto!important;
+  overscroll-behavior:contain;
+  border-radius:20px!important;
+  padding:18px 14px 14px!important;
+  background:#fff!important;
+  box-shadow:0 24px 70px rgba(0,0,0,.46)!important;
+}
+.modal.show ~ .result{pointer-events:none}
+.app:has(.modal.show) .stream,
+.app:has(.modal.show) .header,
+.app:has(.modal.show) .side,
+.app:has(.modal.show) .bottom,
+.app:has(.modal.show) .commentsPanel{
+  filter:brightness(.58) blur(1.5px);
+  pointer-events:none!important;
+}
+</style>
+
+
+/* ===== Ver.2.129: FX kept for future hidden-route use; ENDING FLOW moved away ===== */
+<style id="v129-ending-flow-position">
+.endingProgressHud{
+  right:auto!important;
+  left:50%!important;
+  transform:translateX(-50%)!important;
+  bottom:112px!important;
+  min-width:126px!important;
+  z-index:26!important;
+}
+#fx{
+  position:relative;
+  z-index:30;
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.129</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -6881,37 +6933,28 @@ function recentStreamerText(){
   return conversation.history.filter(x=>x.role==='streamer').slice(-1)[0]?.text||'';
 }
 function buildNaturalQuestion(){
-  const topic=conversation.topic||'雑談';
-  const last=recentStreamerText();
-  const pool=[];
-
-  if(conversation.facts.tomorrowEarly){
-    pool.push('明日何時起きなの？','そんな早いなら何時に寝る予定？');
-  }
-  if(conversation.facts.sleepy){
-    pool.push('今どれくらい眠いの？ww','眠いのに何でまだ喋れてるの？ww');
-  }
-  if(topic==='食べ物'||/食べ|ごはん|飯|ラーメン|寿司|チョコ/.test(last)){
-    pool.push('結局いま何食べたいの？','最近いちばん美味しかったもの何？');
-  }
-  if(topic==='忙しい'||/仕事|忙し/.test(last)){
-    pool.push('今日いちばん大変だったの何？','明日も仕事あるの？');
-  }
-  if(topic==='久しぶり'){
-    pool.push('久しぶりの間なにしてたの？','最近なんか変わったことあった？');
-  }
-  if(/終わ|おつ|またね/.test(last)||conversation.endMentions>0){
-    pool.push('じゃあ最後に、今日いちばん楽しかったこと何？','今日の配信で一番笑ったとこどこ？');
-  }
-  if(pool.length===0){
-    pool.push(
-      '最近いちばんハマってること何？',
-      '今日いちばん笑ったこと何？',
-      '今いちばん欲しいもの何？',
-      '明日休みだったら何したい？',
-      '最近「これ話したかった」ってことある？'
-    );
-  }
+  const pool=[
+    '好きな食べ物なに？',
+    '最近ハマってるものある？',
+    '犬派？猫派？',
+    '朝型？夜型？',
+    '甘いもの好き？',
+    '好きな季節は？',
+    '最近よく聴く曲ある？',
+    'インドア派？アウトドア派？',
+    '今いちばん欲しいものは？',
+    '旅行するなら海？山？',
+    '好きな飲み物は？',
+    '休みの日なにしてる？',
+    '好きな色は？',
+    '目玉焼き何かける？',
+    'ごはん派？パン派？',
+    '夏と冬ならどっちが好き？',
+    'コーヒー派？紅茶派？',
+    '好きなおにぎりの具なに？',
+    'もし明日休みなら何したい？',
+    '今いちばん食べたいものなに？'
+  ];
   return pick(pool);
 }
 function startQuestionThread({ending=false}={}){
@@ -7037,10 +7080,20 @@ function startQuestionThread({ending=false}={}){
 
     addSystemComment('コメント欄から「質問になっているコメント」をタップしてね。');
 
+    const dummyPool=[
+      {name:'たろ',text:'今日も楽しかった〜',correct:false},
+      {name:'みるく',text:'もうこんな時間なんだ',correct:false},
+      {name:'ねこ',text:'この流れ好きww',correct:false},
+      {name:'りり',text:'おつかれさま〜！',correct:false},
+      {name:'momo',text:'眠くなってきた🥱',correct:false},
+      {name:'たろ',text:'まだ人いるの草',correct:false},
+      {name:'みるく',text:'今日ずっと笑ってるww',correct:false},
+      {name:'ねこ',text:'このまま終われるかな',correct:false}
+    ];
+    const dummies=shuffle([...dummyPool]).slice(0,2);
     const options=[
       {name:asker,text:q,correct:true},
-      {name:'たろ',text:'それなww',correct:false},
-      {name:'みるく',text:'おつかれ〜！',correct:false}
+      ...dummies
     ];
 
     options.forEach((opt,i)=>{
