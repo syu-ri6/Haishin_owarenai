@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.122 POST-MINIGAME TAP GUARD</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.125 SO CLOSE ENDING FLOW</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2759,7 +2759,75 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.122</div>
+
+<style id="v123-player-final-decision">
+#ending.securedEnding{
+  animation:securedEndPulse .62s ease-in-out infinite alternate!important;
+  filter:brightness(1.22) saturate(1.22)!important;
+}
+@keyframes securedEndPulse{
+  from{transform:translateY(0) scale(1);box-shadow:0 0 18px rgba(255,232,126,.75)}
+  to{transform:translateY(-1px) scale(1.025);box-shadow:0 0 34px rgba(255,92,181,.85)}
+}
+</style>
+
+
+<style id="v124-question-live-comment-pick">
+.comment.questionPickOption{
+  cursor:pointer;
+  outline:1px solid rgba(163,118,255,.78);
+  box-shadow:0 0 0 2px rgba(143,87,255,.12),0 8px 18px rgba(50,20,100,.18);
+  animation:questionPickGlow .9s ease-in-out infinite alternate;
+  touch-action:manipulation;
+}
+.comment.questionPickOption::after{
+  content:'タップ';
+  margin-left:auto;
+  align-self:center;
+  font-size:8px;
+  font-weight:1000;
+  color:#dfcaff;
+  border:1px solid rgba(196,161,255,.55);
+  border-radius:999px;
+  padding:3px 6px;
+  background:rgba(110,66,190,.22);
+}
+.comment.questionPickCorrect{
+  outline:2px solid rgba(130,255,191,.95)!important;
+  background:rgba(70,190,120,.18)!important;
+}
+.comment.questionPickWrong{
+  outline:2px solid rgba(255,110,140,.95)!important;
+  animation:questionPickShake .18s linear 2!important;
+}
+@keyframes questionPickGlow{
+  from{filter:brightness(1)}
+  to{filter:brightness(1.12)}
+}
+@keyframes questionPickShake{
+  0%,100%{transform:translateX(0)}
+  50%{transform:translateX(4px)}
+}
+</style>
+
+
+<style id="v125-ending-momentum">
+.endingProgressHud{
+  position:absolute;right:10px;bottom:67px;min-width:112px;padding:7px 9px;
+  border-radius:12px;background:rgba(24,14,54,.90);border:1px solid rgba(166,124,255,.45);
+  box-shadow:0 7px 20px rgba(17,7,40,.24);z-index:8;pointer-events:none;text-align:center
+}
+.endingProgressHud small{display:block;font-size:7px;letter-spacing:.14em;color:#bca7ff;font-weight:1000}
+.endingProgressHud b{display:block;margin-top:2px;font-size:10px;color:#fff;font-weight:1000}
+.endingProgressHud span{display:block;margin-top:3px;font-size:11px;letter-spacing:.15em;color:#bda9f7}
+.endingProgressHud.near{border-color:rgba(255,224,111,.85);box-shadow:0 0 18px rgba(255,221,97,.18),0 7px 20px rgba(17,7,40,.24)}
+.endingProgressHud.near b,.endingProgressHud.near span{color:#ffe58f}
+.endingProgressHud.final{border-color:rgba(255,91,190,.95);box-shadow:0 0 24px rgba(255,74,184,.34)}
+.endingProgressHud.final b,.endingProgressHud.final span{color:#ff9cdd}
+.endingNearMissResult{margin:7px auto 2px;padding:7px 10px;width:max-content;max-width:90%;border-radius:999px;background:rgba(255,255,255,.08);font-size:11px;font-weight:900;color:#fff2bd}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.125</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3254,7 +3322,7 @@ function recordMiniGameResult(type,success){
 const EVENT_HUD_META={
   first:{icon:'👤',name:'FIRST VIEWER',task:'初見さんへの対応をしてください'},
   gift:{icon:'🎁',name:'GIFT EVENT',task:'ギフト対応をしてください'},
-  question:{icon:'💬',name:'QUESTION EVENT',task:'質問コメントをタップ → そのあと入力欄から回答'},
+  question:{icon:'💬',name:'QUESTION EVENT',task:'答える？無視する？'},
   name:{icon:'📣',name:'NAME CALL',task:'名前呼び対応をしてください'},
   rom:{icon:'🫥',name:'ROM EVENT',task:'ROM勢の初コメントを見逃さないで'},
   five:{icon:'⏰',name:'5 MINUTE EVENT',task:'話題を延長しすぎないで'}
@@ -3277,7 +3345,7 @@ function updateCurrentEventHud(type=majorEventType||eventFlowType,phase=eventFlo
   if(type==='question'){
     if(phase==='intro_title'||phase==='intro_explain'||phase==='minigame_pending'||phase==='minigame'){
       step='STEP 1 / 2';
-      task='① 紫の3つは選択肢。質問になっているコメントを1つタップ';
+      task='① コメント欄から質問コメントをタップ';
     }else if(phase==='response'||phase==='response_timeout'){
       step='STEP 2 / 2';
       task='② 下の入力欄に答えを書いて「送信」';
@@ -3649,40 +3717,53 @@ function pickClosingChallengeEvent(){
 
 function resolveClosingAfterHandledEvent(type){
   const ready=getClosureReadiness();
-  const lastSuccess=eventMiniStats.last?.success!==false;
+  const lastMini=(eventMiniStats.last && eventMiniStats.last.type===type)
+    ?eventMiniStats.last
+    :null;
 
-  // Observation makes luck better, never certain.
-  let chance=.10 + ready*.0062;
-  chance += lastSuccess ? .08 : -.04;
-  if(closingAttemptWindowBoost)chance+=.15;
-  if(conversation.endingTrust<45)chance-=.08;
-  chance += (Math.random()-.5)*.10; // small per-attempt luck swing
-  chance=Math.max(.10,Math.min(.90,chance));
-  runStats.lastEndChance=chance;
-  closingAttemptWindowBoost=false;
+  const ignoredQuestion=(type==='question' && window.__questionIgnoredForClosing===true);
+  window.__questionIgnoredForClosing=false;
 
-  if(Math.random()<chance){
-    addSystemComment('イベント対応完了。終了タイミングを確保しました。');
-    setTimeout(()=>{
-      if(ended)return;
-      hideContextActions();
-      hideEventMiniGame();
-      endMajorEvent();
-      unlockComposerForEvent();
-      finish('NATURAL CLOSE');
-    },700);
-  }else{
-    const reason=conversation.unresolved>0
-      ?'未処理の要求が残っています。'
-      :conversation.topicPressure>50
-        ?'コメント欄の熱量がまだ高い状態です。'
-        :conversation.endingTrust<45
-          ?'終了宣言への信頼度が低下しています。'
-          :eventMiniStats.last?.success===false
-            ?'イベント対応は完了しましたが、流れを掴み切れませんでした。'
-            :'終了可能性：判定不能。';
-    addSystemComment(reason);
-    toast('まだ終われない！');
+  if(lastMini?.success===false && !ignoredQuestion){
+    const before=endingMomentum;
+    endingMomentum=Math.max(0,endingMomentum-1);
+    updateEndingProgressHud();
+
+    if(before>=2){
+      endingNearMisses++;
+      addSystemComment('イベント対応で流れが崩れた。あと少しだったのに…');
+      toast('くっ…あと少しだったのに！！');
+    }else{
+      addSystemComment('イベント対応は完了。でも終了の空気はまだ作れない。');
+      toast('まだ終われない！');
+    }
+    return;
+  }
+
+  let gain=1;
+  if(ignoredQuestion){
+    conversation.closureScore=clamp100(conversation.closureScore+5);
+  }else if(ready>=82 && endingMomentum===1 && Math.random()<.24){
+    gain=2;
+  }
+
+  endingMomentum=Math.min(3,endingMomentum+gain);
+  updateEndingProgressHud();
+
+  if(endingMomentum===1){
+    addSystemComment('AIR CLEAR：終了の流れが少しできた。');
+    toast('AIR CLEAR　まだもう少し！');
+  }else if(endingMomentum===2){
+    addSystemComment('ENDING READY：あと少し！ 次を乗り越えればFINAL WINDOW。');
+    toast('あと少し！！');
+  }
+
+  if(endingMomentum>=3){
+    hideContextActions();
+    hideEventMiniGame();
+    endMajorEvent();
+    unlockComposerForEvent();
+    openSecuredEndingWindow(5200);
   }
 }
 
@@ -4400,6 +4481,16 @@ let lastMajorEventAt=0;
 function beginMajorEvent(type){
   // Ver.2.91: one event at a time, without replacing the event itself.
   if(ended || majorEventType || currentContextAction?.eventType || giftChallenge || eventMiniGameActive || distanceMiniActive)return false;
+
+  if(securedEndingReady()){
+    clearSecuredEnding();
+    endingNearMisses++;
+    endingMomentum=1;
+    updateEndingProgressHud();
+    addSystemComment('FINAL WINDOW LOST：ここでイベント発生。あと少しだったのに…');
+    toast('ここで来る！？ あと少しだったのに！！');
+  }
+
   majorEventType=type;
   lastMajorEventAt=Date.now();
   setEventFlowPhase(type,'intro_pending');
@@ -4465,6 +4556,11 @@ const QUICK_ACTIONS={
       {label:'✎ 自分で話す',focus:true}
     ]
   },
+  question:{
+    label:'💬 QUESTION',
+    ttl:30000,
+    actions:[]
+  },
   gift:{
     label:'🎁 GIFT',
     ttl:12000,
@@ -4526,6 +4622,11 @@ function showContextActions(type,overrides={}){
     b.textContent=a.label;
     if(a.className)b.className=a.className;
     b.onclick=()=>{
+      if(typeof a.run==='function'){
+        hideContextActions();
+        a.run();
+        return;
+      }
       if(a.focus){
         hideContextActions();
         setTimeout(()=>$('#talkInput').focus(),60);
@@ -4663,7 +4764,10 @@ function addComment(name,text,meta={}){
   d.dataset.text=text;
   d.innerHTML=`<b>${name}</b><span>${text}</span>`;
   if(name!=='配信者'){
-    d.addEventListener('click',()=>setReplyTarget(name,text,d));
+    d.addEventListener('click',()=>{
+      if(d.classList.contains('questionPickOption'))return;
+      setReplyTarget(name,text,d);
+    });
   }
   comments.appendChild(d);
   if(name!=='配信者'){
@@ -4686,6 +4790,7 @@ function addComment(name,text,meta={}){
     newCommentCount++;
     updateNewCommentButton();
   }
+  return d;
 }
 function rand(a){return a[Math.floor(Math.random()*a.length)]}function burst(pool,n=2){for(let i=0;i<n;i++)setTimeout(()=>{let c=rand(pool);addComment(c[0],c[1])},i*260)}
 
@@ -4771,6 +4876,82 @@ const runStats={
   endingWindowAttempts:0,secretExit:false,mutedSecret:false,lastEndChance:0
 };
 let endingWindowUntil=0,lastEndingWindowAt=0,closingAttemptWindowBoost=false;
+let securedEndingUntil=0;
+let securedEndingTimer=null;
+
+// Visible ending momentum. Goal: create "almost!" moments before the true finish.
+let endingMomentum=0; // 0..3
+let endingNearMisses=0;
+
+function ensureEndingProgressHud(){
+  let hud=$('#endingProgressHud');
+  if(hud)return hud;
+  const btn=$('#ending');
+  if(!btn)return null;
+  hud=document.createElement('div');
+  hud.id='endingProgressHud';
+  hud.className='endingProgressHud';
+  hud.innerHTML='<small>ENDING FLOW</small><b>まだ遠い</b><span>○ ○ ○</span>';
+  btn.insertAdjacentElement('beforebegin',hud);
+  return hud;
+}
+function updateEndingProgressHud(){
+  const hud=ensureEndingProgressHud();
+  if(!hud)return;
+  const label=endingMomentum>=3?'FINAL WINDOW':endingMomentum===2?'ENDING READY':endingMomentum===1?'AIR CLEAR':'まだ遠い';
+  hud.querySelector('b').textContent=label;
+  hud.querySelector('span').textContent=[0,1,2].map(i=>i<endingMomentum?'●':'○').join(' ');
+  hud.classList.toggle('near',endingMomentum===2);
+  hud.classList.toggle('final',endingMomentum>=3);
+}
+function setEndingMomentum(next,{announce=true}={}){
+  const prev=endingMomentum;
+  endingMomentum=Math.max(0,Math.min(3,next));
+  updateEndingProgressHud();
+  if(!announce||endingMomentum===prev)return;
+  if(endingMomentum===1){
+    addSystemComment('AIR CLEAR：少し終わりやすい空気になった。');
+    toast('AIR CLEAR　まだもう少し！');
+  }else if(endingMomentum===2){
+    addSystemComment('ENDING READY：あと少しで終われそう！');
+    toast('あと少し！！');
+  }else if(endingMomentum>=3){
+    addSystemComment('FINAL WINDOW：今なら本当に終われる！');
+  }
+}
+
+function securedEndingReady(){
+  return Date.now()<securedEndingUntil;
+}
+function clearSecuredEnding(){
+  securedEndingUntil=0;
+  clearTimeout(securedEndingTimer);
+  securedEndingTimer=null;
+  $('#ending')?.classList.remove('endingWindow','securedEnding');
+}
+function openSecuredEndingWindow(ms=5200){
+  clearSecuredEnding();
+  endingMomentum=3;
+  updateEndingProgressHud();
+  securedEndingUntil=Date.now()+ms;
+  endingWindowUntil=securedEndingUntil;
+  runStats.endingWindowOpens++;
+  $('#ending')?.classList.add('endingWindow','securedEnding');
+  addSystemComment('FINAL WINDOW：今だ！ 終了ボタンを押して！');
+  toast('FINAL WINDOW：今！！');
+
+  securedEndingTimer=setTimeout(()=>{
+    if(ended)return;
+    if(!securedEndingReady()){
+      clearSecuredEnding();
+      endingNearMisses++;
+      endingMomentum=2;
+      updateEndingProgressHud();
+      addSystemComment('FINAL WINDOW LOST：あと少しだったのに…');
+      toast('あと少しだったのに！！！');
+    }
+  },ms+30);
+}
 
 function clamp100(v){return Math.max(0,Math.min(100,v))}
 function isEndingWindowOpen(){return Date.now()<endingWindowUntil}
@@ -6546,84 +6727,181 @@ function startQuestionThread({ending=false}={}){
 
   if($('#questionState')){
     $('#questionState').hidden=false;
-    $('#questionState').textContent='💬 QUESTION ① 選ぶ';
+    $('#questionState').textContent='💬 QUESTION';
   }
   conversation.threadDepth=0;
   conversation.unresolved=Math.min(8,conversation.unresolved+1);
   conversation.topicPressure=Math.min(100,conversation.topicPressure+(ending?13:8));
 
+  const cleanupQuestionPick=()=>{
+    [...document.querySelectorAll('.questionPickOption')].forEach(el=>{
+      el.classList.remove('questionPickOption','questionPickCorrect','questionPickWrong');
+    });
+  };
+
+  const endQuestionIgnored=()=>{
+    clearTimeout(activeQuestionExpiryTimer);
+    cleanupQuestionPick();
+
+    sat=Math.max(0,sat-6);
+    window.__questionIgnoredForClosing=true;
+    conversation.topicPressure=Math.max(0,conversation.topicPressure-7);
+    conversation.closureScore=clamp100(conversation.closureScore+7);
+    conversation.unresolved=Math.max(0,conversation.unresolved-1);
+
+    addComment(asker,'あ、スルーされた🥲',{persona:(listeners[asker]||{}).persona||'',eventKey:true});
+    addSystemComment('質問を無視しました。満足度が少し下がりました。');
+    toast('QUESTION：無視した → 満足度 -6');
+    sync();
+
+    conversation.activeQuestion=null;
+    if($('#questionState')){
+      $('#questionState').hidden=true;
+      $('#questionState').textContent='💬 QUESTION';
+    }
+    if($('#talkInput'))$('#talkInput').placeholder='配信者として話す…';
+
+    setEventFlowPhase('question','complete');
+    endMajorEvent('question');
+    unlockComposerForEvent();
+
+    if(closingChallengeType==='question')markClosingChallengeHandled('question');
+  };
+
+  const enterQuestionAnswerPhase=()=>{
+    cleanupQuestionPick();
+    setEventFlowPhase('question','response');
+
+    if($('#questionState')){
+      $('#questionState').hidden=false;
+      $('#questionState').textContent='💬 QUESTION ② 回答';
+    }
+
+    const questionInput=$('#talkInput');
+    if(questionInput){
+      questionInput.placeholder='この質問への回答を入力…';
+    }
+
+    unlockComposerForEvent();
+    toast('質問GET！ ここから自分で回答！');
+    addSystemComment(
+      window.v116InputMode==='voice'
+        ? '質問GET！ マイクで答えてね。'
+        : '質問GET！ 下の入力欄から答えてね。'
+    );
+
+    conversation.history.push({role:'listener',name:asker,text:q,time:Date.now(),kind:'question'});
+    conversation.history=conversation.history.slice(-24);
+
+    clearTimeout(activeQuestionExpiryTimer);
+    const questionStamp=conversation.activeQuestion?.startedAt||Date.now();
+
+    activeQuestionExpiryTimer=setTimeout(()=>{
+      if(ended)return;
+      if(!conversation.activeQuestion)return;
+      if(conversation.activeQuestion.startedAt!==questionStamp)return;
+
+      conversation.activeQuestion=null;
+      if($('#questionState')){
+        $('#questionState').hidden=true;
+        $('#questionState').textContent='💬 QUESTION';
+      }
+      if($('#talkInput'))$('#talkInput').placeholder='配信者として話す…';
+      conversation.unresolved=Math.max(0,conversation.unresolved-1);
+      conversation.topicPressure=Math.max(0,conversation.topicPressure-5);
+      endMajorEvent('question');
+      unlockComposerForEvent();
+      addSystemComment('質問はコメント欄の流れに埋もれました。');
+      if(closingChallengeType==='question')clearClosingChallenge();
+    },18000);
+
+    const questionEventStamp=conversation.activeQuestion?.startedAt||0;
+    setTimeout(()=>{
+      if(ended||majorEventType!=='question')return;
+      if(!conversation.activeQuestion||conversation.activeQuestion.startedAt!==questionEventStamp)return;
+      addComment('たろ',ending?'最後って言った人ほど質問するww':'それ聞くんだww',{persona:'tease'});
+    },360);
+  };
+
+  const beginQuestionCommentPick=()=>{
+    clearTimeout(eventMiniGuaranteeTimer);
+    setEventFlowPhase('question','minigame');
+
+    if($('#questionState')){
+      $('#questionState').hidden=false;
+      $('#questionState').textContent='💬 QUESTION ① 選ぶ';
+    }
+
+    addSystemComment('コメント欄から「質問になっているコメント」をタップしてね。');
+
+    const options=[
+      {name:asker,text:q,correct:true},
+      {name:'たろ',text:'それなww',correct:false},
+      {name:'みるく',text:'おつかれ〜！',correct:false}
+    ];
+
+    options.forEach((opt,i)=>{
+      setTimeout(()=>{
+        if(ended||majorEventType!=='question')return;
+        const node=addComment(opt.name,opt.text,{
+          persona:(listeners[opt.name]||{}).persona||'',
+          eventKey:opt.correct
+        });
+        if(!node)return;
+
+        node.classList.add('questionPickOption');
+        node.dataset.questionCorrect=opt.correct?'1':'0';
+
+        node.addEventListener('click',(e)=>{
+          if(majorEventType!=='question')return;
+          e.preventDefault();
+          e.stopPropagation();
+
+          if(node.dataset.questionCorrect==='1'){
+            node.classList.add('questionPickCorrect');
+            setTimeout(enterQuestionAnswerPhase,220);
+          }else{
+            node.classList.add('questionPickWrong');
+            toast('それは質問じゃないよ！');
+            setTimeout(()=>node.classList.remove('questionPickWrong'),420);
+          }
+        },true);
+      },i*180);
+    });
+  };
+
   showEventIntroSequence(
     '',
     ending?'最後の質問が来た！':'質問が来た！',
-    '① 紫の3つは選択肢。質問になっているコメントを1つタップ！ ② 質問GET後は、下の入力欄に答えを書いて「送信」しよう。',
+    'この質問、答える？ それとも無視する？',
     ()=>{
-      startChoiceMiniGame({
-        type:'question',
-        title:'STEP 1 / 2　質問を選ぶ',
-        prompt:'紫の3つは選択肢！ “質問になっているコメント”を1つタップ',
-        choices:[
-          {text:q,correct:true},
-          {text:'それなww',correct:false},
-          {text:'おつかれ〜！',correct:false}
-        ],
-        onDone:()=>{
-          if(ended)return;
+      clearTimeout(eventMiniGuaranteeTimer);
+      setEventFlowPhase('question','minigame_pending');
 
-          addComment(asker,q,{persona:(listeners[asker]||{}).persona||'',eventKey:true});
-          setEventFlowPhase('question','response');
-          if($('#questionState')){
-            $('#questionState').hidden=false;
-            $('#questionState').textContent='💬 QUESTION ② 回答';
+      showContextActions('question',{
+        label:'💬 質問にどうする？',
+        ttl:30000,
+        actions:[
+          {
+            label:'答える',
+            className:'primary',
+            run:beginQuestionCommentPick
+          },
+          {
+            label:'無視する',
+            className:'soft',
+            run:endQuestionIgnored
           }
-          const questionInput=$('#talkInput');
-          if(questionInput){
-            questionInput.placeholder='この質問への回答を入力…';
-            questionInput.focus();
-          }
-          toast('QUESTION 2 / 2：下の入力欄に答えを書いて「送信」！');
-          addSystemComment('質問GET！ 下の入力欄に答えを書いて「送信」してください。');
-          conversation.history.push({role:'listener',name:asker,text:q,time:Date.now(),kind:'question'});
-          conversation.history=conversation.history.slice(-24);
-
-          unlockComposerForEvent();
-
-          clearTimeout(activeQuestionExpiryTimer);
-          const questionStamp=conversation.activeQuestion?.startedAt||Date.now();
-
-          activeQuestionExpiryTimer=setTimeout(()=>{
-            if(ended)return;
-            if(!conversation.activeQuestion)return;
-            if(conversation.activeQuestion.startedAt!==questionStamp)return;
-
-            conversation.activeQuestion=null;
-            if($('#questionState')){
-              $('#questionState').hidden=true;
-              $('#questionState').textContent='💬 QUESTION';
-            }
-            if($('#talkInput'))$('#talkInput').placeholder='配信者として話す…';
-            conversation.unresolved=Math.max(0,conversation.unresolved-1);
-            conversation.topicPressure=Math.max(0,conversation.topicPressure-5);
-            endMajorEvent('question');
-            unlockComposerForEvent();
-            addSystemComment('質問はコメント欄の流れに埋もれました.');
-            if(closingChallengeType==='question')clearClosingChallenge();
-          },18000);
-
-          const questionEventStamp=conversation.activeQuestion?.startedAt||0;
-          setTimeout(()=>{
-            if(ended||majorEventType!=='question')return;
-            if(!conversation.activeQuestion||conversation.activeQuestion.startedAt!==questionEventStamp)return;
-            addComment('たろ',ending?'最後って言った人ほど質問するww':'それ聞くんだww',{persona:'tease'});
-          },360);
-
-          toast(ending?'最後の質問！':'質問が来た！');
-        }
+        ]
       });
+
+      addSystemComment('QUESTION：答える / 無視する を選んでください。');
     }
   );
 
   return true;
 }
+
 function answerActiveQuestion(v){
   const q=conversation.activeQuestion;
   if(!q)return null;
@@ -6860,8 +7138,39 @@ async function startClosingSequence(){
   interruptClosing(kind);
 }
 
+async function startSecuredFinalClose(){
+  if(ended || !securedEndingReady())return;
+
+  clearSecuredEnding();
+  clearClosingWatchdog();
+  closing=true;
+  $('.app').classList.add('closingMode','closingSequence');
+
+  for(const step of [3,2,1]){
+    if(ended)return;
+    showClosingOverlay(
+      step,
+      step===1?'このまま終了します…':'配信終了中…'
+    );
+    await new Promise(r=>setTimeout(r,step===1?520:760));
+  }
+
+  if(ended)return;
+  hideClosingOverlay();
+  $('.app').classList.remove('closingMode','closingSequence');
+  finish('NATURAL CLOSE');
+}
+
 function attemptEnd(src){
   if(ended)return;
+
+  // A successful handled event creates a real ending chance,
+  // but only the player's END press can complete the stream.
+  if(securedEndingReady()){
+    startSecuredFinalClose();
+    return;
+  }
+
   if(majorEventBusy() || giftState?.active){
     toast(`${currentEventLabel()} を先に処理して！`);
     updateCurrentEventHud();
@@ -6881,6 +7190,7 @@ function attemptEnd(src){
 }
 function finish(title){
   clearClosingWatchdog();
+  clearSecuredEnding();
   hideEventMiniGame();
   hideDistanceMiniGame();
   clearTimeout(eventMiniGameTimer);
@@ -6910,6 +7220,17 @@ function finish(title){
   $('#score').textContent=totalScore;
   $('#resultRank').textContent=`RANK ${rank}`;
   $('#resultSat').textContent=sat;
+
+  let nearMissLine=$('#endingNearMissResult');
+  if(!nearMissLine){
+    nearMissLine=document.createElement('div');
+    nearMissLine.id='endingNearMissResult';
+    nearMissLine.className='endingNearMissResult';
+    $('#resultRank')?.insertAdjacentElement('afterend',nearMissLine);
+  }
+  nearMissLine.textContent=endingNearMisses>0
+    ?`終了直前の惜しい失敗：${endingNearMisses}回`
+    :'FINAL WINDOWを逃さず終了！';
   $('#resultTimeScore').textContent=timeScore;
   $('#resultDuration').textContent=formatDuration(sec);
   $('#resultText').textContent='総合スコアは「満足度」と「時間評価」の2つだけで算出。';
@@ -7793,8 +8114,12 @@ function v101ShowPage(i){
 }
 function v101StartGameOnce(){
   if(actualGameStarted)return;
+  endingMomentum=0;
+  endingNearMisses=0;
+  clearSecuredEnding();
   if(comments)comments.innerHTML='';
   actualGameStarted=true;
+  setTimeout(updateEndingProgressHud,0);
   v116ChooseTendency();
   v116UpdateWorldClock();
   gameStartedAt=Date.now();
