@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.120 OK REALLY GATES EVENT</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.122 POST-MINIGAME TAP GUARD</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2744,7 +2744,22 @@ button,.side button,.comboArea,.comboBtn,.send,.quickClosing{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.120</div>
+
+<style id="v122-post-minigame-lock">
+body.postMiniGameInputLock #ending,
+body.postMiniGameInputLock #close,
+body.postMiniGameInputLock #fx,
+body.postMiniGameInputLock #mic,
+body.postMiniGameInputLock #talkBtn,
+body.postMiniGameInputLock #sendBtn,
+body.postMiniGameInputLock #topMenu,
+body.postMiniGameInputLock .contextActions,
+body.postMiniGameInputLock .quickActions{
+  pointer-events:none!important;
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.122</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3181,6 +3196,23 @@ let majorEventType=null;
 let eventMiniGameActive=false;
 let eventMiniGameTimer=null;
 let eventMiniGameTick=null;
+
+// Short safety lock after a minigame ends so rapid taps cannot fall through to normal UI.
+let postMiniGameInputLockedUntil=0;
+function armPostMiniGameInputLock(ms=720){
+  postMiniGameInputLockedUntil=Math.max(postMiniGameInputLockedUntil,Date.now()+ms);
+  document.body.classList.add('postMiniGameInputLock');
+  clearTimeout(window.__postMiniGameInputLockTimer);
+  window.__postMiniGameInputLockTimer=setTimeout(()=>{
+    if(Date.now()>=postMiniGameInputLockedUntil){
+      document.body.classList.remove('postMiniGameInputLock');
+    }
+  },ms+40);
+}
+function postMiniGameInputLocked(){
+  return Date.now()<postMiniGameInputLockedUntil;
+}
+
 let eventIntroSequenceToken=0;
 let eventMiniStats={attempts:0,wins:0,last:null};
 let eventMiniWatchdog=null;
@@ -3441,6 +3473,7 @@ function startDistanceMiniGame({type='first',title='距離感を合わせろ！'
     result.textContent=grade==='PERFECT'?'PERFECT ✨ 距離感ぴったり！':
       grade==='GOOD'?'GOOD！ いい距離感':'MISS… 距離感むずいww';
 
+    armPostMiniGameInputLock(720);
     setTimeout(()=>{
       hideDistanceMiniGame();
       setEventFlowPhase(type,'response');
@@ -3563,6 +3596,7 @@ function startChoiceMiniGame({type,title,prompt,choices,timeout=4300,onDone}){
     if(finished)return;finished=true;clearTimeout(eventMiniGameTimer);clearInterval(eventMiniGameTick);clearTimeout(eventMiniWatchdog);
     recordMiniGameResult(type,success);[...wrap.querySelectorAll('button')].forEach(b=>b.disabled=true);
     $('#eventMiniStatus').textContent=success?'成功！ ✨':'失敗！ でも配信は続く…';$('#eventMiniBar').style.transform='scaleX(0)';
+    armPostMiniGameInputLock(720);
     setTimeout(()=>{hideEventMiniGame();setEventFlowPhase(type,'response');if(onDone)onDone(success)},650);
   };
   shuffleMiniChoices(choices).forEach(c=>{const b=document.createElement('button');b.type='button';b.textContent=c.text;b.disabled=true;b.onclick=()=>{if(finished||!armed)return;if(c.correct){b.classList.add('correct');finishMini(true)}else{b.classList.add('wrong');finishMini(false)}};wrap.appendChild(b)});
@@ -4106,6 +4140,7 @@ function startNameCallSlot({chain=false}={}){
     choice.classList.add('nameSlotBurst');
     $('#eventMiniBar').style.transform='scaleX(0)';
     $('#eventMiniStatus').textContent=`決定：${current.label}`;
+    armPostMiniGameInputLock(720);
     setTimeout(()=>finishNameCallEvent(current.id),520);
   };
   stop.onclick=()=>{if(v116Armed)stopSlot()};
@@ -6404,6 +6439,10 @@ $('#topMenu').onclick=()=>modal(
   ]
 );
 $('#ending').onclick=()=>{
+  if(postMiniGameInputLocked()){
+    toast('連打が落ち着いてから終了してね！');
+    return;
+  }
   noteExploration('ending');
   if(exploration.secretStage>=2){
     exploration.secretStage=3;
@@ -7123,7 +7162,8 @@ function updateGiftChallenge(){
     recordMiniGameResult('gift',false);
     setEventFlowPhase('gift','response');
     giftChallenge=null;
-    revealGiftReplyActions();
+    armPostMiniGameInputLock(820);
+    setTimeout(revealGiftReplyActions,820);
   }
 }
 function comboTap(){
@@ -7166,7 +7206,8 @@ function comboTap(){
     $('.app')?.classList.remove('giftChallengeActive');
     $('#giftReason').classList.remove('challengeHint');
     giftChallenge=null;
-    setTimeout(revealGiftReplyActions,220);
+    armPostMiniGameInputLock(820);
+    setTimeout(revealGiftReplyActions,820);
   }
 }
 
@@ -7289,6 +7330,7 @@ function updateGiftHud(){
     $('#giftHud').classList.remove('challenge');
     $('#giftReason').classList.remove('challengeHint');
     $('#giftHud').hidden=true;
+    armPostMiniGameInputLock(620);
     addSystemComment('ギフト演出が終了しました。');
     if(giftState.boss)exitGiftBoss();
     giftResetTimer=setTimeout(()=>{
