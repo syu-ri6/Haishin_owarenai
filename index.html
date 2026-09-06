@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.125 SO CLOSE ENDING FLOW</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.127 IN-APP MIC GUIDE</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2827,7 +2827,48 @@ body.postMiniGameInputLock .quickActions{
 .endingNearMissResult{margin:7px auto 2px;padding:7px 10px;width:max-content;max-width:90%;border-radius:999px;background:rgba(255,255,255,.08);font-size:11px;font-weight:900;color:#fff2bd}
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.125</div>
+
+<style id="v126-line-mic-guide">
+.v126LineMicNotice{
+  margin-top:10px;padding:9px 10px;border-radius:12px;
+  border:1px solid rgba(255,215,104,.72);
+  background:rgba(255,210,88,.10);
+  text-align:left;
+}
+.v126LineMicNotice b{display:block;font-size:10px;color:#ffe58d;margin-bottom:3px}
+.v126LineMicNotice span{display:block;font-size:9px;line-height:1.45;color:#fff4c8}
+.v126LineGuide{
+  position:fixed;inset:0;z-index:10050;
+  display:none;align-items:center;justify-content:center;
+  padding:18px;background:rgba(9,5,24,.78);backdrop-filter:blur(7px)
+}
+.v126LineGuide.show{display:flex}
+.v126LineGuideCard{
+  width:min(92vw,380px);padding:20px 18px 16px;border-radius:20px;
+  background:linear-gradient(180deg,rgba(55,31,102,.98),rgba(24,14,54,.99));
+  border:1px solid rgba(198,157,255,.58);
+  box-shadow:0 24px 70px rgba(0,0,0,.48);
+  color:#fff;text-align:center
+}
+.v126LineGuideCard small{font-size:8px;letter-spacing:.16em;color:#cdb4ff;font-weight:1000}
+.v126LineGuideCard h2{font-size:16px;line-height:1.4;margin:8px 0 9px}
+.v126LineGuideCard p{font-size:10px;line-height:1.55;color:#e9ddff;margin:0}
+.v126LineGuideSteps{
+  display:grid;gap:6px;margin:14px 0;text-align:left;
+  padding:10px;border-radius:12px;background:rgba(255,255,255,.06)
+}
+.v126LineGuideSteps span{font-size:10px;font-weight:850;color:#fff}
+.v126LineGuideCard button{
+  width:100%;border:0;border-radius:12px;padding:11px 12px;margin-top:7px;
+  font-size:11px;font-weight:1000;color:#fff;
+  background:linear-gradient(180deg,#ff70bd,#cc4b9d)
+}
+.v126LineGuideCard button.sub{
+  background:rgba(255,255,255,.09);color:#ded3f5
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.127</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -2947,6 +2988,25 @@ body.postMiniGameInputLock .quickActions{
       <button id="v116VoiceMode" type="button"><b>🎙</b>マイクで遊ぶ<span>喋った内容を文字にして返す</span></button>
     </div>
     <p class="v116ModeHint">マイクが使えない時は、いつでもキーボードに戻せます。</p>
+    <div class="v126LineMicNotice" id="v126LineMicNotice" hidden>
+      <b>アプリ内ブラウザから開いてるみたい！</b>
+      <span>🎙 マイクで遊ぶ場合は、このページをSafari / Chromeなどの外部ブラウザで開いてね。</span>
+    </div>
+  </div>
+</div>
+
+<div class="v126LineGuide" id="v126LineGuide" aria-hidden="true">
+  <div class="v126LineGuideCard">
+    <small>MICROPHONE HELP</small>
+    <h2>アプリ内ブラウザだとマイクが使えないことがあります</h2>
+    <p>このアプリのメニューから、このページを<strong>Safari / Chromeなどの外部ブラウザ</strong>で開いてから「マイクで遊ぶ」を選んでね。</p>
+    <div class="v126LineGuideSteps">
+      <span>① アプリ内ブラウザのメニューを開く</span>
+      <span>② 「Safariで開く」または「ブラウザで開く」</span>
+      <span>③ もう一度「マイクで遊ぶ」</span>
+    </div>
+    <button id="v126LineKeyboard" type="button">⌨️ このままキーボードで遊ぶ</button>
+    <button id="v126LineGuideClose" class="sub" type="button">戻る</button>
   </div>
 </div>
 
@@ -8192,10 +8252,57 @@ function v101StartTutorial(){
   v101TutorialIndex=0;
   requestAnimationFrame(()=>requestAnimationFrame(v101RenderTutorial));
 }
+function v127DetectInAppBrowser(){
+  const ua=navigator.userAgent||'';
+  if(/\bLine\//i.test(ua) || /\bLIFF\b/i.test(ua))return 'LINE';
+  if(/Twitter|X\/\d|TwitterAndroid/i.test(ua))return 'X';
+  if(/Discord/i.test(ua))return 'Discord';
+  if(/Instagram/i.test(ua))return 'Instagram';
+  if(/FBAN|FBAV/i.test(ua))return 'Facebook';
+  return '';
+}
+function v126ShowLineGuide(){
+  const g=$('#v126LineGuide');
+  if(!g)return;
+  g.classList.add('show');
+  g.setAttribute('aria-hidden','false');
+}
+function v126HideLineGuide(){
+  const g=$('#v126LineGuide');
+  if(!g)return;
+  g.classList.remove('show');
+  g.setAttribute('aria-hidden','true');
+}
+function v126ChooseVoiceMode(){
+  const appName=v127DetectInAppBrowser();
+  if(appName){
+    const g=$('#v126LineGuide');
+    g?.querySelector('h2') && (g.querySelector('h2').textContent=`${appName}内だとマイクが使えないことがあります`);
+    const lead=g?.querySelector('p');
+    if(lead)lead.innerHTML=`${appName}のアプリ内ブラウザでは音声入力が動かないことがあります。<strong>Safari / Chromeなどの外部ブラウザ</strong>で開いてから「マイクで遊ぶ」を選んでね。`;
+    v126ShowLineGuide();
+    return;
+  }
+  v116SetPlayMode('voice');
+}
+function v126RefreshLineMicNotice(){
+  const n=$('#v126LineMicNotice');
+  if(!n)return;
+  const appName=v127DetectInAppBrowser();
+  n.hidden=!appName;
+  if(appName){
+    const b=n.querySelector('b');
+    const s=n.querySelector('span');
+    if(b)b.textContent=`${appName}から開いてるみたい！`;
+    if(s)s.textContent='🎙 マイクで遊ぶ場合は、このページをSafari / Chromeなどの外部ブラウザで開いてね。';
+  }
+}
+
 function initGameIntro(){
-  $('#v101Start')?.addEventListener('click',v116ShowModeSelect);
+  v126RefreshLineMicNotice();
+  $('#v101Start')?.addEventListener('click',()=>{v126RefreshLineMicNotice();v116ShowModeSelect();});
   $('#v116KeyboardMode')?.addEventListener('click',()=>v116SetPlayMode('keyboard'));
-  $('#v116VoiceMode')?.addEventListener('click',()=>v116SetPlayMode('voice'));
+  $('#v116VoiceMode')?.addEventListener('click',v126ChooseVoiceMode);
   document.querySelectorAll('[data-v101-next]').forEach(btn=>btn.addEventListener('click',()=>v101ShowPage(v101PageIndex+1)));
   $('#v101Enter')?.addEventListener('click',v101StartTutorial);
   $('#v101TutorialNext')?.addEventListener('click',()=>{if(v101TutorialIndex<V101_TUTORIAL_STEPS.length-1){v101TutorialIndex++;v101RenderTutorial();}else closeGameIntro();});
@@ -8203,6 +8310,9 @@ function initGameIntro(){
   $('#introNext')?.addEventListener('click',()=>v101ShowPage(v101PageIndex+1));
   $('#introSkip')?.addEventListener('click',closeGameIntro);
   $('#v116VoiceReply')?.addEventListener('click',v116StartVoice);
+  $('#v126LineKeyboard')?.addEventListener('click',()=>{v126HideLineGuide();v116SetPlayMode('keyboard');});
+  $('#v126LineGuideClose')?.addEventListener('click',v126HideLineGuide);
+  $('#v126LineGuide')?.addEventListener('click',e=>{if(e.target===$('#v126LineGuide'))v126HideLineGuide();});
   window.addEventListener('resize',()=>{if(!$('#v101Tutorial')?.hidden)v101RenderTutorial();});
   v101ShowPage(0);
 }
