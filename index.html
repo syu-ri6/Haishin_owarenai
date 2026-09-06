@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.127 IN-APP MIC GUIDE</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.128 MIC UX & HELP HUB</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -2868,7 +2868,29 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.127</div>
+
+<style id="v128-mic-help-and-settings">
+#modalText{
+  white-space:pre-line;
+  line-height:1.55;
+}
+.app.voicePlayMode #v116VoiceStatus{
+  display:block;
+  padding:3px 4px 0;
+  font-weight:850;
+}
+#send.v128MicReadyToSend{
+  animation:v128SendPulse .58s ease-in-out infinite alternate;
+  box-shadow:0 0 0 2px rgba(255,233,120,.33),0 0 22px rgba(255,104,190,.78);
+  transform-origin:center;
+}
+@keyframes v128SendPulse{
+  from{transform:scale(1);filter:brightness(1)}
+  to{transform:scale(1.045);filter:brightness(1.22)}
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.128</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3246,20 +3268,92 @@ function v116HideModeSelect(){const m=$('#v116ModeSelect');if(m){m.classList.rem
 function v116SetPlayMode(mode){
   v116PlayMode=mode==='voice'?'voice':'keyboard';
   $('.app')?.classList.toggle('voicePlayMode',v116PlayMode==='voice');
-  const inp=$('#talkInput');if(inp)inp.placeholder=v116PlayMode==='voice'?'話すか、文字で入力…':'配信者として話す…';
-  v116HideModeSelect();v101ShowPage(1);
+
+  const inp=$('#talkInput');
+  if(inp)inp.placeholder=v116PlayMode==='voice'?'話すか、文字で入力…':'配信者として話す…';
+
+  const status=$('#v116VoiceStatus');
+  if(status){
+    status.textContent=v116PlayMode==='voice'
+      ?'🎙 話す → 文字を確認 → 送信'
+      :'🎙 話した内容を回答にできます';
+  }
+  $('#send')?.classList.remove('v128MicReadyToSend');
+
+  v116HideModeSelect();
+  v101ShowPage(1);
 }
-function v116StopVoice(){if(v116VoiceRecognition&&v116VoiceListening){try{v116VoiceRecognition.stop()}catch{}}v116VoiceListening=false;$('#v116VoiceReply')?.classList.remove('listening')}
+function v116StopVoice(){
+  if(v116VoiceRecognition&&v116VoiceListening){try{v116VoiceRecognition.stop()}catch{}}
+  v116VoiceListening=false;
+  $('#v116VoiceReply')?.classList.remove('listening');
+}
+function v128ShowFirstMicHelp(){
+  modal(
+    '🎙 マイク入力の使い方',
+    '① マイクを押して話す\n② 話した内容が入力欄に文字で入る\n③ 内容を確認する\n④ 最後に「送信」を押して完了！\n\n※ 話しただけではコメントは送られません。\n※ もう一度マイクを押すと停止できます。',
+    [
+      {label:'わかった！マイクを使う',hot:true,fn:()=>{
+        localStorage.setItem('haishin_mic_help_seen','1');
+        v116StartVoice();
+      }},
+      {label:'⌨️ キーボードに切り替える',fn:()=>v116SetPlayMode('keyboard')}
+    ]
+  );
+}
 function v116StartVoice(){
+  if(localStorage.getItem('haishin_mic_help_seen')!=='1'){
+    v128ShowFirstMicHelp();
+    return;
+  }
+
   const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){toast('このブラウザでは音声入力が使えないので、キーボードに切り替えます');v116SetPlayMode('keyboard');return;}
+  if(!SR){
+    toast('このブラウザでは音声入力が使えないので、キーボードに切り替えます');
+    v116SetPlayMode('keyboard');
+    return;
+  }
   if(v116VoiceListening){v116StopVoice();return;}
-  const r=new SR();v116VoiceRecognition=r;r.lang='ja-JP';r.interimResults=true;r.continuous=false;
-  v116VoiceListening=true;$('#v116VoiceReply')?.classList.add('listening');$('#v116VoiceStatus').textContent='🎙 聞いてます…';
-  r.onresult=e=>{let text='';for(let i=e.resultIndex;i<e.results.length;i++)text+=e.results[i][0].transcript; if(text){$('#talkInput').value=text;$('#v116VoiceStatus').textContent=`認識：${text}`}};
-  r.onerror=()=>{$('#v116VoiceStatus').textContent='うまく聞き取れなかった…文字入力でもOK';};
-  r.onend=()=>{v116VoiceListening=false;$('#v116VoiceReply')?.classList.remove('listening');if(!$('#talkInput').value)$('#v116VoiceStatus').textContent='🎙 もう一度話すか、文字で入力してね';};
-  try{r.start()}catch{$('#v116VoiceStatus').textContent='マイクを開始できませんでした';v116VoiceListening=false;}
+
+  const r=new SR();
+  v116VoiceRecognition=r;
+  r.lang='ja-JP';
+  r.interimResults=true;
+  r.continuous=false;
+
+  v116VoiceListening=true;
+  $('#v116VoiceReply')?.classList.add('listening');
+  $('#send')?.classList.remove('v128MicReadyToSend');
+  $('#v116VoiceStatus').textContent='🎙 聞いてます… 話し終わったら文字を確認してね';
+
+  r.onresult=e=>{
+    let text='';
+    for(let i=e.resultIndex;i<e.results.length;i++)text+=e.results[i][0].transcript;
+    if(text){
+      $('#talkInput').value=text;
+      $('#v116VoiceStatus').textContent=`認識：${text}　→ 最後に「送信」！`;
+      $('#send')?.classList.add('v128MicReadyToSend');
+    }
+  };
+  r.onerror=()=>{
+    $('#v116VoiceStatus').textContent='うまく聞き取れなかった…もう一度話すか文字入力でもOK';
+    $('#send')?.classList.remove('v128MicReadyToSend');
+  };
+  r.onend=()=>{
+    v116VoiceListening=false;
+    $('#v116VoiceReply')?.classList.remove('listening');
+    if(!$('#talkInput').value){
+      $('#v116VoiceStatus').textContent='🎙 話す → 文字を確認 → 送信';
+      $('#send')?.classList.remove('v128MicReadyToSend');
+    }
+  };
+  try{
+    r.start();
+  }catch{
+    $('#v116VoiceStatus').textContent='マイクを開始できませんでした';
+    $('#send')?.classList.remove('v128MicReadyToSend');
+    v116VoiceListening=false;
+  }
 }
 
 const pools={normal:[['ゆう','今日も楽しかったー！'],['ねこ','もうこんな時間ww'],['たろ','おつかれ〜'],['りり','草'],['momo','久しぶり来れた！'],['はる','眠くなってきた〜'],['みるく','今日ほんと終わる？w']],closing:[['ゆう','おつかれ〜！'],['ねこ','今日は本当に終わるの？'],['たろ','また明日ー！'],['りり','寝な寝なww'],['momo','最後に名前呼んで！'],['初見さん','今来ました！']],gift:[['ゆう','ナイギフ！'],['ねこ','今投げるの草'],['たろ','ナイス〜！'],['りり','🎁✨']],mute:[['ゆう','ミュートなってる！'],['ねこ','聞こえてないww'],['たろ','声ないよー！']]};
@@ -6664,21 +6758,70 @@ function generateIdleComment(){
 
 function modal(title,text,opts){$('#modalTitle').textContent=title;$('#modalText').textContent=text;let c=$('#choices');c.innerHTML='';opts.forEach(o=>{let b=document.createElement('button');b.textContent=o.label;if(o.hot)b.className='hot';b.onclick=()=>{$('#modal').classList.remove('show');o.fn&&o.fn()};c.appendChild(b)});$('#modal').classList.add('show')}$('#closeSheet').onclick=()=>$('#modal').classList.remove('show');
 $('#miniToggle').onclick=()=>$('#miniCard').classList.toggle('show');
-$('#topMenu').onclick=()=>modal(
-  '配信メニュー',
-  AI_CONFIG.endpoint?'自動コメント＋AIコメント接続中。会話履歴を使って複数ラリーします。':'自動コメント＋ローカル会話中。AI API URLを設定すると複数ラリーAIコメントが混ざります。',
-  [
-    {label:AI_CONFIG.endpoint?'🤖 AUTO＋AI 接続先を変更':'🤖 AUTO＋AI を接続',fn:()=>{
-      const current=AI_CONFIG.endpoint;
-      const value=prompt('AI API URLを入力してください\\n例：https://あなたのアプリ.vercel.app/api/ai-chat',current);
-      if(value===null)return;
-      if(value.trim()){localStorage.setItem('haishin_ai_endpoint',value.trim());toast('AI接続先を保存しました')}
-      else{localStorage.removeItem('haishin_ai_endpoint');setAIStatus('fallback');toast('ローカルAIに戻しました')}
-    }},
-    {label:'配信情報',fn:()=>toast(endingStatusText())},
-    {label:'💬 予測辞書',fn:()=>toast('配信者セリフ予測 727例 / 67分類')}
-  ]
-);
+function v128OpenPlayHelp(){
+  modal(
+    '📖 遊び方・ヒント',
+    'このゲームは「配信を終わらせるタイミング」を作るゲームです。\n\n・イベントに対応して終了の流れを作る\n・AIR CLEAR → ENDING READY → FINAL WINDOW\n・FINAL WINDOWで終了ボタンを押せたらゴール\n・全部のコメントに答える必要はありません\n・無視すると満足度が下がることがあります\n・早く終わることだけが正解ではありません\n\n※細かい内部条件は秘密。空気を読んで終わろう！',
+    [{label:'戻る',fn:()=>setTimeout(v128OpenSettingsMenu,40)}]
+  );
+}
+function v128OpenMicHelp(){
+  modal(
+    '🎙 マイク入力について',
+    'マイクモードの流れ\n\n① マイクを押す\n② 話す\n③ 文字に変換された内容を確認\n④ 「送信」を押して完了！\n\n話しただけではコメントは送られません。\nもう一度マイクを押すと停止できます。\nうまく認識しない時は、そのまま文字入力してもOKです。',
+    [
+      {label:'🎙 マイクモードにする',hot:true,fn:()=>v126ChooseVoiceMode()},
+      {label:'⌨️ キーボードモードにする',fn:()=>v116SetPlayMode('keyboard')},
+      {label:'戻る',fn:()=>setTimeout(v128OpenSettingsMenu,40)}
+    ]
+  );
+}
+function v128OpenBrowserHelp(){
+  modal(
+    '🌐 アプリ内ブラウザについて',
+    'LINE / X / Discord / Instagram / Facebookなどのアプリ内ブラウザでは、マイク入力が動かないことがあります。\n\nその場合はページをSafari / Chromeなどの外部ブラウザで開いて、もう一度「マイクで遊ぶ」を選んでください。',
+    [{label:'戻る',fn:()=>setTimeout(v128OpenSettingsMenu,40)}]
+  );
+}
+function v128ToggleInputMode(){
+  if(v116PlayMode==='voice'){
+    v116SetPlayMode('keyboard');
+    toast('キーボード入力に切り替えました');
+  }else{
+    v126ChooseVoiceMode();
+    if(!v127DetectInAppBrowser())toast('マイク入力に切り替えました');
+  }
+}
+function v128OpenSettingsMenu(){
+  modal(
+    '⚙️ 配信メニュー',
+    v116PlayMode==='voice'
+      ?'入力：🎙 マイク　困った時はここから確認できます。'
+      :'入力：⌨️ キーボード　困った時はここから確認できます。',
+    [
+      {label:'📖 遊び方・ヒント',fn:v128OpenPlayHelp},
+      {label:'🎙 マイク入力の使い方',fn:v128OpenMicHelp},
+      {label:v116PlayMode==='voice'?'⌨️ キーボードに切り替える':'🎙 マイクに切り替える',fn:v128ToggleInputMode},
+      {label:'🌐 アプリ内ブラウザについて',fn:v128OpenBrowserHelp},
+      {label:AI_CONFIG.endpoint?'🤖 AUTO＋AI 接続先を変更':'🤖 AUTO＋AI を接続',fn:()=>{
+        const current=AI_CONFIG.endpoint;
+        const value=prompt('AI API URLを入力してください\n例：https://あなたのアプリ.vercel.app/api/ai-chat',current);
+        if(value===null)return;
+        if(value.trim()){
+          localStorage.setItem('haishin_ai_endpoint',value.trim());
+          toast('AI接続先を保存しました');
+        }else{
+          localStorage.removeItem('haishin_ai_endpoint');
+          setAIStatus('fallback');
+          toast('ローカルAIに戻しました');
+        }
+      }},
+      {label:'配信情報',fn:()=>toast(endingStatusText())},
+      {label:'💬 予測辞書',fn:()=>toast('配信者セリフ予測 727例 / 67分類')}
+    ]
+  );
+}
+$('#topMenu').onclick=v128OpenSettingsMenu;
 $('#ending').onclick=()=>{
   if(postMiniGameInputLocked()){
     toast('連打が落ち着いてから終了してね！');
@@ -7925,6 +8068,10 @@ async function sendTalk(){
   handleGiftBait(v);
   addComment('配信者',v);
   $('#talkInput').value='';
+  $('#send')?.classList.remove('v128MicReadyToSend');
+  if(v116PlayMode==='voice' && $('#v116VoiceStatus')){
+    $('#v116VoiceStatus').textContent='🎙 話す → 文字を確認 → 送信';
+  }
   // Ver.2.62: after each send, close the software keyboard so the full stream UI returns.
   const activeInput=$('#talkInput');
   if(activeInput && document.activeElement===activeInput){
