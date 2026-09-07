@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.140 CANONICAL TITLE INTERACTION</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.142 TITLE MENU + DEV CHECK</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -3092,7 +3092,7 @@ body.postMiniGameInputLock .quickActions{
 
 
 <style id="v2140-title-canonical">
-/* Ver.2.140
+/* Ver.2.141
    Canonical title-screen interaction layer.
    Decorative title elements never receive taps.
    Only START and the three bottom utility buttons are interactive. */
@@ -3219,7 +3219,41 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.140</div>
+
+<style id="v2141-play-style-hit-fix">
+#v116ModeSelect{
+  z-index:5000!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+}
+#v116ModeSelect .v116ModeCard{
+  position:relative!important;
+  z-index:1!important;
+  pointer-events:auto!important;
+}
+#v116ModeSelect .v116ModeButtons{
+  position:relative!important;
+  z-index:2!important;
+  pointer-events:auto!important;
+}
+#v116ModeSelect .v116ModeButtons button{
+  position:relative!important;
+  z-index:3!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+  cursor:pointer!important;
+}
+#v116ModeSelect .v116ModeButtons button *{
+  pointer-events:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.141</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3262,9 +3296,9 @@ body.postMiniGameInputLock .quickActions{
     <button class="v101MainBtn" id="v101Start" type="button"
 onclick="var m=document.getElementById('v116ModeSelect');if(m){m.classList.add('show');m.setAttribute('aria-hidden','false');}return false;">▶ START</button>
     <div class="v101SubButtons">
-      <button type="button">設定</button>
-      <button type="button">クレジット</button>
-      <button type="button">遊び方</button>
+      <button id="v142SettingsBtn" type="button">設定</button>
+      <button id="v142CreditsBtn" type="button">クレジット</button>
+      <button id="v142HowtoBtn" type="button">遊び方</button>
     </div>
   </section>
 
@@ -3337,8 +3371,10 @@ onclick="var m=document.getElementById('v116ModeSelect');if(m){m.classList.add('
     <p><b>コメントを読む → イベントに対応 → 終われる空気を作る。</b><br>FINAL WINDOWで「終了」を押せたら脱出成功！</p>
     <p>まずはコメントへの自由回答方法を選んでね。</p>
     <div class="v116ModeButtons">
-      <button id="v116KeyboardMode" type="button"><b>⌨️</b>キーボードで遊ぶ<span>文字を打ってコメントに返す</span></button>
-      <button id="v116VoiceMode" type="button"><b>🎙</b>マイクで遊ぶ<span>喋った内容を文字にして返す</span></button>
+      <button id="v116KeyboardMode" type="button"
+onclick="if(typeof v116SetPlayMode==='function'){v116SetPlayMode('keyboard');}return false;"><b>⌨️</b>キーボードで遊ぶ<span>文字を打ってコメントに返す</span></button>
+      <button id="v116VoiceMode" type="button"
+onclick="if(typeof v126ChooseVoiceMode==='function'){v126ChooseVoiceMode();}return false;"><b>🎙</b>マイクで遊ぶ<span>喋った内容を文字にして返す</span></button>
     </div>
     <p class="v116ModeHint">マイクが使えない時は、いつでもキーボードに戻せます。</p>
     <div class="v126LineMicNotice" id="v126LineMicNotice" hidden>
@@ -8917,9 +8953,7 @@ function v126RefreshLineMicNotice(){
 
 function initGameIntro(){
   v126RefreshLineMicNotice();
-  // START is handled directly on the title button in Ver.2.140 to avoid iPhone hit-test/listener conflicts.
-  $('#v116KeyboardMode')?.addEventListener('click',()=>v116SetPlayMode('keyboard'));
-  $('#v116VoiceMode')?.addEventListener('click',v126ChooseVoiceMode);
+  // START is handled directly on the title button in Ver.2.141 to avoid iPhone hit-test/listener conflicts.
   document.querySelectorAll('[data-v101-next]').forEach(btn=>btn.addEventListener('click',()=>v101ShowPage(v101PageIndex+1)));
   $('#v101Enter')?.addEventListener('click',v101StartTutorial);
   $('#v101TutorialNext')?.addEventListener('click',()=>{if(v101TutorialIndex<V101_TUTORIAL_STEPS.length-1){v101TutorialIndex++;v101RenderTutorial();}else closeGameIntro();});
@@ -9185,4 +9219,69 @@ function startInitialRoomComments(){
   });
 })();
 </script>
+
+<style id="v142-title-menu-style">
+.v142Overlay{position:fixed;inset:0;z-index:99990;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(7,8,25,.72);backdrop-filter:blur(8px)}
+.v142Overlay.show{display:flex}.v142Card{width:min(92vw,430px);max-height:min(76svh,620px);overflow:auto;border:1px solid rgba(255,255,255,.18);border-radius:24px;padding:22px 20px 18px;background:linear-gradient(180deg,rgba(35,31,82,.98),rgba(14,16,48,.98));box-shadow:0 22px 70px rgba(0,0,0,.45);color:#f8f6ff}
+.v142Card small{display:block;color:#9beef4;font-weight:900;letter-spacing:.14em;margin-bottom:5px}.v142Card h2{margin:0 0 13px;font-size:24px}.v142Card p,.v142Card li{font-size:14px;line-height:1.75}.v142Card ul{padding-left:1.25em}.v142Card .v142Close{width:100%;margin-top:15px;border:0;border-radius:14px;padding:13px 16px;font-weight:900;background:linear-gradient(90deg,#ff5aa7,#8d6bff);color:white}.v142MiniGrid{display:grid;gap:9px;margin-top:12px}.v142MiniGrid div{padding:11px 12px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.08)}
+.v142DevPanel{position:fixed;left:8px;right:8px;bottom:8px;z-index:100000;max-height:42svh;overflow:auto;padding:10px 12px;border-radius:14px;background:rgba(5,8,20,.95);border:1px solid rgba(76,225,255,.55);font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;color:#e9fbff;display:none;white-space:pre-wrap}.v142DevPanel.show{display:block}.v142DevPanel b{color:#72f5b3}
+</style>
+<div class="v142Overlay" id="v142Overlay" aria-hidden="true">
+  <div class="v142Card" role="dialog" aria-modal="true" aria-labelledby="v142ModalTitle">
+    <small id="v142ModalKicker">SYSTEM MENU</small>
+    <h2 id="v142ModalTitle">MENU</h2>
+    <div id="v142ModalBody"></div>
+    <button class="v142Close" id="v142ModalClose" type="button">閉じる</button>
+  </div>
+</div>
+<div class="v142DevPanel" id="v142DevPanel" aria-live="polite"></div>
+<script id="v142-title-menu-script">
+(function(){
+  const $=s=>document.querySelector(s);
+  const overlay=$('#v142Overlay'), title=$('#v142ModalTitle'), kicker=$('#v142ModalKicker'), body=$('#v142ModalBody');
+  function openMenu(type){
+    const data={
+      settings:{k:'SETTINGS',t:'設定',h:'<div class="v142MiniGrid"><div><b>コメント速度</b><br>配信画面の右上MENUから変更できます。</div><div><b>マイク / 演出</b><br>配信画面右側の操作ボタンから切り替えできます。</div><div><b>入力方法</b><br>START後にキーボード / マイクを選べます。</div></div><p>ゲーム途中の設定変更は、配信画面内のMENUを使ってね。</p>'},
+      credits:{k:'CREDITS',t:'クレジット',h:'<p><b>「配信、終われません。」</b></p><p>企画・ゲームデザイン：しゅり<br>制作サポート：ChatGPT</p><p>配信者あるあるを、終われそうで終われない脱出ゲームにした作品です。</p>'},
+      howto:{k:'HOW TO PLAY',t:'遊び方',h:'<ul><li>コメントを読みながら、起きたイベントに対応する。</li><li>質問・ギフト・初見・名前呼びなどで「終われる空気」が崩れます。</li><li>自由回答はキーボードかマイクで返せます。</li><li>FINAL WINDOWで終了ボタンを押せたら脱出成功。</li><li>選び方や行動によって結果が変化します。</li></ul><p><b>目標：2:00までに配信を終わらせろ！</b></p>'}
+    }[type];
+    if(!data||!overlay)return; kicker.textContent=data.k;title.textContent=data.t;body.innerHTML=data.h;overlay.classList.add('show');overlay.setAttribute('aria-hidden','false');
+  }
+  function closeMenu(){if(!overlay)return;overlay.classList.remove('show');overlay.setAttribute('aria-hidden','true');}
+  $('#v142SettingsBtn')?.addEventListener('click',()=>openMenu('settings'));
+  $('#v142CreditsBtn')?.addEventListener('click',()=>openMenu('credits'));
+  $('#v142HowtoBtn')?.addEventListener('click',()=>openMenu('howto'));
+  $('#v142ModalClose')?.addEventListener('click',closeMenu);
+  overlay?.addEventListener('click',e=>{if(e.target===overlay)closeMenu();});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&overlay?.classList.contains('show'))closeMenu();});
+
+  // Development-only self check. Public URL stays completely clean. Use ?devcheck=1 to enable.
+  function runDevCheck(){
+    if(new URLSearchParams(location.search).get('devcheck')!=='1')return;
+    const panel=$('#v142DevPanel');
+    const all=[...document.querySelectorAll('button')];
+    const ids=[...document.querySelectorAll('[id]')].map(x=>x.id);
+    const dup=[...new Set(ids.filter((id,i)=>ids.indexOf(id)!==i))];
+    const source=[...document.scripts].map(s=>s.textContent||'').join('\n');
+    const orphan=[];
+    all.forEach((b,i)=>{
+      const id=b.id;
+      const inline=!!b.getAttribute('onclick');
+      const named=id && (source.includes("'#"+id+"'")||source.includes('"#'+id+'"')||source.includes("getElementById('"+id+"')")||source.includes('getElementById("'+id+'")')||source.includes(id));
+      const delegated=!id && (b.closest('[data-action],[data-choice],[data-command]')||b.hasAttribute('data-action')||b.hasAttribute('data-choice')||b.hasAttribute('data-command'));
+      if(!inline&&!named&&!delegated&&!b.disabled&&b.type!=='submit') orphan.push((id?'#'+id:'button['+i+']')+' 「'+(b.textContent||'').trim().slice(0,28)+'」');
+    });
+    const required=['v101Start','v116KeyboardMode','v116VoiceMode','v101Enter','v142SettingsBtn','v142CreditsBtn','v142HowtoBtn','v142ModalClose'];
+    const missing=required.filter(id=>!document.getElementById(id));
+    const lines=['DEV BUTTON SELF CHECK','buttons: '+all.length,'duplicate IDs: '+(dup.length?dup.join(', '):'0'),'required missing: '+(missing.length?missing.join(', '):'0'),'possible orphan buttons: '+orphan.length];
+    if(orphan.length) lines.push(orphan.slice(0,30).join('\n'));
+    const ok=!dup.length&&!missing.length&&!orphan.length;
+    console.group('[Ver.2.142] Button Self Check');console.log(lines.join('\n'));console.groupEnd();
+    if(panel){panel.innerHTML='<b>'+(ok?'✅ PASS':'⚠️ CHECK')+'</b>\n'+lines.join('\n');panel.classList.add('show');}
+    window.__v142ButtonCheck={ok,duplicateIds:dup,missingRequired:missing,possibleOrphans:orphan,totalButtons:all.length};
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',runDevCheck,{once:true});else runDevCheck();
+})();
+</script>
+
 </body></html>
