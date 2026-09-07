@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.131 QUESTION FLOW HOTFIX</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.136 BRIEFING LAYOUT FIX</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -3005,7 +3005,128 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.131</div>
+
+<style id="v2132-prologue-comment-size">
+/* Ver.2.132: prologue comment text readability only. Content/layout logic unchanged. */
+
+/* Bottom LIVE COMMENTS box shown during the prologue */
+.v101Story .storyComments .v101CommentsHead{
+  font-size:9px!important;
+  line-height:1.2!important;
+}
+.v101Story .storyComments>div:not(.v101CommentsHead){
+  padding:7px 8px!important;
+  font-size:11px!important;
+  line-height:1.42!important;
+  gap:8px!important;
+}
+.v101Story .storyComments b{
+  min-width:36px!important;
+  font-size:10.5px!important;
+  line-height:1.35!important;
+}
+.v101Story .storyComments span{
+  font-size:11px!important;
+  line-height:1.42!important;
+}
+
+/* Comments that pop up around the character midway through the prologue */
+.v101Story .v101Float{
+  padding:9px 11px!important;
+  font-size:10.5px!important;
+  line-height:1.35!important;
+  max-width:min(44vw,190px)!important;
+  white-space:normal!important;
+}
+
+/* Slightly tighten positions so the larger floating comments still fit cleanly */
+.v101Story .f1{left:5%!important}
+.v101Story .f2{right:4%!important}
+.v101Story .f3{left:6%!important}
+.v101Story .f4{right:5%!important}
+
+@media(max-width:390px){
+  .v101Story .storyComments>div:not(.v101CommentsHead){
+    font-size:10.5px!important;
+  }
+  .v101Story .storyComments span{
+    font-size:10.5px!important;
+  }
+  .v101Story .v101Float{
+    font-size:10px!important;
+    max-width:46vw!important;
+  }
+}
+</style>
+
+
+<style id="v2135-playtest-ux-pass">
+/* ① START briefing: separate screen so it never overlaps the title */
+.v2136Briefing{
+  position:absolute;inset:0;z-index:3600;
+  display:grid;place-items:center;
+  padding:calc(62px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));
+  background:rgba(8,9,31,.80);
+  backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
+  opacity:0;transition:.16s opacity;
+}
+.v2136Briefing[hidden]{display:none!important}
+.v2136Briefing.show{opacity:1}
+.v2136BriefingCard{
+  width:min(88vw,360px);
+  padding:20px 18px 18px;
+  border-radius:22px;
+  text-align:center;
+  color:#fff;
+  background:linear-gradient(180deg,rgba(34,29,83,.98),rgba(15,16,48,.99));
+  border:2px solid rgba(166,122,255,.92);
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.13),0 8px 0 rgba(42,27,95,.72),0 24px 50px rgba(4,5,24,.48),0 0 28px rgba(156,91,255,.24);
+}
+.v2136BriefingCard>small{color:#77e8ff;font-size:9px;font-weight:1000;letter-spacing:.18em}
+.v2136BriefingCard h2{margin:7px 0 9px;font-size:22px;line-height:1.15;color:#ff79bd}
+.v2136BriefingCard p{margin:0;font-size:13px;line-height:1.7;font-weight:750}
+.v2136BriefingCard p strong{color:#ffd86c}
+.v2136Steps{display:grid;gap:4px;margin:14px auto;padding:11px 12px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09)}
+.v2136Steps span{font-size:12px;font-weight:900}
+.v2136Steps i{font-size:9px;color:#9e8aff;font-style:normal;line-height:1}
+.v2136BriefingCard>b{display:block;color:#fff;font-size:13px;margin:2px 0 13px}
+#v2136BriefingOk{
+  width:100%;height:48px;border:0;border-radius:15px;
+  background:linear-gradient(180deg,#ff72b7,#ef438e);
+  color:#fff;font-size:14px;font-weight:1000;
+  box-shadow:inset 0 2px 0 rgba(255,255,255,.28),0 5px 0 #9e285f;
+}
+#v2136BriefingOk:active{transform:translateY(3px);box-shadow:0 2px 0 #9e285f}
+
+/* Event guide line breaks */
+.eventBanner.confirmMode #eventDesc{white-space:pre-line!important;line-height:1.55!important}
+
+/* Preserve the latest requested prologue comment readability */
+.v101Story .storyComments .v101CommentsHead{
+  font-size:13px!important;line-height:1.2!important;letter-spacing:.16em!important;padding-bottom:6px!important;
+}
+.v101Story .storyComments>div:not(.v101CommentsHead){
+  padding:9px 12px!important;font-size:16px!important;line-height:1.55!important;gap:12px!important;
+}
+.v101Story .storyComments b{
+  min-width:50px!important;font-size:15px!important;line-height:1.45!important;
+}
+.v101Story .storyComments span{
+  font-size:16px!important;line-height:1.55!important;
+}
+.v101Story .v101Float{
+  font-size:14px!important;line-height:1.45!important;padding:12px 15px!important;max-width:min(50vw,230px)!important;
+}
+@media(max-width:390px){
+  .v101Story .storyComments .v101CommentsHead{font-size:12px!important}
+  .v101Story .storyComments>div:not(.v101CommentsHead),
+  .v101Story .storyComments span{font-size:15px!important}
+  .v101Story .storyComments b{font-size:14px!important;min-width:46px!important}
+  .v101Story .v101Float{font-size:13px!important}
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.136</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3151,6 +3272,22 @@ body.postMiniGameInputLock .quickActions{
   <button id="introSkip" type="button" hidden aria-hidden="true"></button>
 </div>
 
+<div class="v2136Briefing" id="v2136Briefing" hidden>
+  <div class="v2136BriefingCard">
+    <small>MISSION BRIEFING</small>
+    <h2>配信終了脱出ゲーム</h2>
+    <p>あなたは配信者。<br>コメントやイベントをさばきながら、<br><strong>「終われる空気」</strong>を作ろう。</p>
+    <div class="v2136Steps">
+      <span>💬 コメントを読む</span>
+      <i>↓</i>
+      <span>⚡ イベントに対応</span>
+      <i>↓</i>
+      <span>🚪 FINAL WINDOWで終了</span>
+    </div>
+    <b>終了を押し切れたら、脱出成功！</b>
+    <button id="v2136BriefingOk" type="button">わかった！ ▶</button>
+  </div>
+</div>
 <div class="v101Tutorial" id="v101Tutorial" hidden>
   <div class="v101TutorialSpot" id="v101TutorialSpot"></div>
   <div class="v101TutorialArrow" id="v101TutorialArrow">↓</div>
@@ -3715,23 +3852,66 @@ function hideEventMiniGame(){
   clearNameSlotTimers();
 }
 
+function v2135EventLabel(kind){
+  return {
+    gift:'GIFT EVENT',
+    beginner:'FIRST VIEWER',
+    first:'FIRST VIEWER',
+    question:'QUESTION EVENT',
+    name:'NAME CALL',
+    rom:'ROM EVENT'
+  }[kind] || 'LIVE EVENT';
+}
+function v2135EventAction(kind,desc){
+  const actions={
+    gift:'ギフトにリアクションして、演出を処理しよう。',
+    beginner:'コメントを読んで、この人に合う距離感で対応しよう。',
+    first:'コメントを読んで、この人に合う距離感で対応しよう。',
+    question:'質問を見つけて、答えるか無視するか判断しよう。',
+    name:'名前呼びリクエストを処理しよう。',
+    rom:'ROM勢の最初の一言を見逃さず対応しよう。'
+  };
+  return actions[kind] || desc || '表示された内容に対応しよう。';
+}
+function v2135EventSpike(kind){
+  if(ended)return;
+  const before=commentRate;
+  commentRate=Math.max(commentRate,34);
+  sync();
+  toast('LIVE CHAT SPIKE ↑');
+  const spikePools={
+    gift:[['ねこ','え、ギフト来た！'],['たろ','今それ来る！？ww']],
+    beginner:[['みるく','初見さんだ〜！'],['りり','距離感だいじ']],
+    first:[['みるく','初見さんだ〜！'],['りり','距離感だいじ']],
+    question:[['ねこ','質問きた！'],['たろ','拾える？ww']],
+    name:[['momo','名前呼びきた！'],['たろ','点呼始まる？ww']],
+    rom:[['古参','ROM勢が喋った'],['ねこ','レアイベント感あるww']]
+  };
+  const p=spikePools[kind]||[['ねこ','なんか来た！'],['たろ','イベント！？']];
+  setTimeout(()=>{if(!ended)addComment(p[0][0],p[0][1]);},110);
+  setTimeout(()=>{if(!ended)addComment(p[1][0],p[1][1]);},380);
+  setTimeout(()=>{commentRate=Math.max(18,before);sync();},2600);
+}
+
 function showEventIntroSequence(kind,title,desc,onDone){
   const token=++eventIntroSequenceToken;
   const type=majorEventType||eventFlowType||kind||'event';
 
   setEventFlowPhase(type,'intro_title');
-  showEventBanner(kind,title,'',760);
+  v2135EventSpike(kind);
+  showEventBanner(kind,`${v2135EventLabel(kind)} 発生！`,title,820);
 
   setTimeout(()=>{
     if(ended||token!==eventIntroSequenceToken)return;
     setEventFlowPhase(type,'intro_explain');
-    showEventConfirm(kind,'どうする？',desc,()=>{
+    const guide=`起きたこと：${title}\nやること：${v2135EventAction(kind,desc)}`;
+    showEventConfirm(kind,'どうする？',guide,()=>{
       if(ended||token!==eventIntroSequenceToken)return;
       setEventFlowPhase(type,'minigame_pending');
       window.__eventOkConfirmedType=type;
       if(onDone)onDone();
     });
-  },900);
+  },980);
 }
 
 function shuffleMiniChoices(items){
@@ -5099,10 +5279,21 @@ $('#time').addEventListener('contextmenu',(e)=>{
   addSystemComment('長押し入力を検出しました。');
 });
 setInterval(()=>{if(ended)return;sec++;let h=String(Math.floor(sec/3600)).padStart(2,'0'),m=String(Math.floor(sec%3600/60)).padStart(2,'0'),s=String(sec%60).padStart(2,'0');$('#time').textContent=`${h}:${m}:${s}`;v116UpdateWorldClock();if(sec%12===0&&energy>3){energy--;sync()}},1000);
+function v2135CommentPace(){
+  // Readability first. Speed becomes an effect instead of being permanently frantic.
+  if(conversation.activeQuestion || (majorEventType==='question' && eventFlowPhase==='response')) return 'focus';
+  if(majorEventBusy()) return 'event';
+  if(endingMomentum>=3) return 'final';
+  if(endingMomentum===2 || closing) return 'closing';
+  return 'normal';
+}
 function ambientDelay(){
-  const rate=Math.max(8,Math.min(48,commentRate));
-  const base=(closing?3600:5200)-(rate*(closing?72:82));
-  return Math.max(closing?1050:1350,base)+(Math.random()*(closing?1100:1600));
+  const pace=v2135CommentPace();
+  if(pace==='focus') return 3900 + Math.random()*1800;   // answer/read time
+  if(pace==='event') return 3000 + Math.random()*1400;   // event UI owns attention
+  if(pace==='final') return 1250 + Math.random()*850;    // deliberate panic
+  if(pace==='closing') return 2100 + Math.random()*1100; // tension rises
+  return 3400 + Math.random()*1800;                      // readable baseline
 }
 function scheduleAmbientComment(){
   setTimeout(async()=>{
@@ -5113,7 +5304,7 @@ function scheduleAmbientComment(){
       if(!commentsPaused&&!ended){
         const idle=generateIdleComment();
         if(idle)addComment(idle.name,idle.text,{persona:idle.persona});
-        if(commentRate>=26&&Math.random()<.52){
+        if(v2135CommentPace()==='final' ? Math.random()<.68 : (v2135CommentPace()==='closing' ? Math.random()<.34 : Math.random()<.12)){
           setTimeout(()=>{
             const second=generateIdleComment();
             if(second)addComment(second.name,second.text,{persona:second.persona});
@@ -5690,6 +5881,77 @@ function pickFreshPredictedLine(pool){
   PREDICTED_CONVO_STATE.recentReplies=PREDICTED_CONVO_STATE.recentReplies.slice(-18);
   return line;
 }
+
+function v2135SemanticResponses(v,replyContext=null){
+  const raw=String(v||'').trim();
+  const s=raw.replace(/\s+/g,'').toLowerCase();
+  if(!raw)return null;
+
+  let category=null, core='';
+  if(/春|夏|秋|冬/.test(s)){
+    category='season';
+    core=(s.match(/春|夏|秋|冬/)||[''])[0];
+  }else if(/犬|猫|いぬ|ねこ/.test(s)){
+    category='pet';
+    core=/犬|いぬ/.test(s)?'犬':'猫';
+  }else if(/コーヒー|珈琲|紅茶|お茶/.test(s)){
+    category='drink';
+    core=/コーヒー|珈琲/.test(s)?'コーヒー':(/紅茶/.test(s)?'紅茶':'お茶');
+  }else if(/海|山/.test(s) && /好き|派|行き/.test(s)){
+    category='place';
+    core=/海/.test(s)?'海':'山';
+  }else if(/甘い|辛い|しょっぱい/.test(s)){
+    category='taste';
+    core=/甘い/.test(s)?'甘いもの':(/辛い/.test(s)?'辛いもの':'しょっぱいもの');
+  }else if(/好き|ハマ|はま/.test(s) && raw.length<=24){
+    category='preference';
+    core=trimForReply(raw);
+  }else if(/^(はい|うん|そう|yes|いや|いいえ|no)[!！。]*$/i.test(raw)){
+    category='yesno';
+    core=/^(はい|うん|そう|yes)/i.test(raw)?'YES':'NO';
+  }else if(raw.length<=4){
+    category='short';
+    core=trimForReply(raw);
+  }else if(raw.length>=34){
+    category='long';
+    core=trimForReply(raw);
+  }
+  if(!category)return null;
+
+  const firstName=replyContext?.name || pick(['みるく','たろ','ねこ','りり','momo']);
+  const firstPersona=(listeners[firstName]||{}).persona||'';
+  let primary='';
+  if(category==='season') primary=`${core}派なんだ！`;
+  if(category==='pet') primary=`${core}派なんだ！`;
+  if(category==='drink') primary=`${core}派なんだ〜`;
+  if(category==='place') primary=`${core}選ぶんだ！`;
+  if(category==='taste') primary=`${core}好きなんだ！`;
+  if(category==='preference') primary=`ちゃんと答えが具体的でいいww`;
+  if(category==='yesno') primary=core==='YES'?'やっぱそっちなんだ！':'そっちじゃないんだ！';
+  if(category==='short') primary='即答で草ww';
+  if(category==='long') primary='めっちゃ語るじゃんww';
+
+  const sideName=pick(['みるく','たろ','ねこ','りり','momo'].filter(n=>n!==firstName));
+  const thirdName=pick(['みるく','たろ','ねこ','りり','momo'].filter(n=>n!==firstName&&n!==sideName));
+  const sidePool={
+    season:['私は逆かも〜','季節の好み分かれるよね','その理由ちょっと気になる'],
+    pet:['わかるー！','私は逆派かもww','そこ結構性格出る'],
+    drink:['わかる〜','私はもう片方派！','飲み物の好み出るね'],
+    place:['いいね〜','私は逆選ぶかも','どっちも捨てがたい'],
+    taste:['わかる！','私は逆かもww','それ急に食べたくなる'],
+    preference:['それ分かる人いそう','そこから話広がりそうww','いい回答きた'],
+    yesno:['即決だww','迷わないタイプ','はっきりしてるww'],
+    short:['判断はやww','迷いゼロww','テンポよすぎ'],
+    long:['情報量ww','ちゃんと理由あるんだね','そこまで聞くと納得']
+  }[category]||['わかるww'];
+
+  return [
+    {name:firstName,text:primary,persona:firstPersona},
+    {name:sideName,text:pick(sidePool),persona:(listeners[sideName]||{}).persona||''},
+    {name:thirdName,text:pick(['コメント欄でも意見割れそうww','なんかその答えらしい','こういう雑談好き']),persona:(listeners[thirdName]||{}).persona||''}
+  ];
+}
+
 function predictedConversationResponses(v,replyContext=null,analysis=null){
   const cat=predictPlayerSpeech(v);
   if(!cat)return null;
@@ -6787,7 +7049,7 @@ async function generateCommentResponse(v,replyContext=null){
     // Prepared high-confidence reactions may replace wording only.
     // AI/game analysis is preserved exactly.
     if(!conversation.activeQuestion){
-      const prepared=predictedConversationResponses(v,replyContext,aiResult.analysis);
+      const prepared=v2135SemanticResponses(v,replyContext) || predictedConversationResponses(v,replyContext,aiResult.analysis);
       if(prepared)aiResult.replies=normalizeHybridReplies(prepared);
     }
     return aiResult;
@@ -6805,6 +7067,7 @@ async function generateCommentResponse(v,replyContext=null){
     applyAIAnalysis(analysis);
     let replies=answerActiveQuestion(v);
     // Ver.2.95: conversation wording upgrade only.
+    if(!replies)replies=v2135SemanticResponses(v,replyContext);
     if(!replies)replies=predictedConversationResponses(v,replyContext,analysis);
     if(!replies)replies=directReplyResponses(v,replyContext,analysis);
     if(!replies)replies=multiRallyLocalResponses(v,replyContext,analysis);
@@ -7239,8 +7502,21 @@ function answerActiveQuestion(v){
     out.push({name:asker,text:'それならもう寝ようww',persona});
   }else if(/ない|特に|わからん|わかんない/.test(raw)){
     out.push({name:asker,text:'ないんかいww 聞いた意味ww',persona});
+  }else if(/春|夏|秋|冬/.test(raw)){
+    const season=(raw.match(/春|夏|秋|冬/)||[''])[0];
+    out.push({name:asker,text:`${season}派なんだ！私はどうしようかなww`,persona});
+  }else if(/犬|猫|いぬ|ねこ/.test(raw)){
+    const pet=/犬|いぬ/.test(raw)?'犬':'猫';
+    out.push({name:asker,text:`${pet}派なんだ！そこ分かれるよね`,persona});
+  }else if(/コーヒー|紅茶|お茶/.test(raw)){
+    const drink=/コーヒー/.test(raw)?'コーヒー':(/紅茶/.test(raw)?'紅茶':'お茶');
+    out.push({name:asker,text:`${drink}派なんだ〜！`,persona});
+  }else if(raw.length<=4){
+    out.push({name:asker,text:'即答で草ww',persona});
+  }else if(raw.length>=28){
+    out.push({name:asker,text:'めっちゃちゃんと答えてくれるじゃんww',persona});
   }else{
-    out.push({name:asker,text:`え、${trimForReply(raw)}なんだ！`,persona});
+    out.push({name:asker,text:`${trimForReply(raw)}なんだ！`,persona});
   }
 
   const answerExpanded=raw.length>28 || /そういえば|ちなみに|あとさ|それでさ|ていうか|話変わる/.test(raw);
@@ -7609,7 +7885,7 @@ function showEventBanner(kind,title,desc,duration=520){
   const el=$('#eventBanner'); if(!el) return;
   const ok=$('#eventOkBtn'); if(ok){ok.hidden=true;ok.onclick=null;ok.disabled=false;}
   el.className='eventBanner '+(kind||'');
-  $('#eventMini').textContent=kind==='gift'?'GIFT EVENT':kind==='beginner'?'FIRST VIEWER':'EVENT';
+  $('#eventMini').textContent=v2135EventLabel(kind);
   $('#eventTitle').textContent=title; $('#eventDesc').textContent=desc;
   el.hidden=false;
   requestAnimationFrame(()=>el.classList.add('show'));
@@ -7629,7 +7905,7 @@ function showEventConfirm(kind,title,desc,onOk){
   const ok=$('#eventOkBtn');
   clearTimeout(eventBannerTimer); eventBannerTimer=null;
   el.className='eventBanner '+(kind||'')+' confirmMode';
-  $('#eventMini').textContent=kind==='gift'?'GIFT EVENT':kind==='beginner'?'FIRST VIEWER':'EVENT';
+  $('#eventMini').textContent=v2135EventLabel(kind);
   $('#eventTitle').textContent=title; $('#eventDesc').textContent=desc;
   el.hidden=false; requestAnimationFrame(()=>el.classList.add('show'));
   if(!ok){if(onOk)onOk();return;}
@@ -8381,8 +8657,8 @@ let v101TutorialIndex=0;
 const V101_TUTORIAL_STEPS=[
   {
     selector:'#comments',
-    title:'ここはコメント欄。',
-    text:'リスナーのコメントはここに流れるよ。コメントはちゃんと読んでおこう！',
+    title:'まずはコメントを読む。',
+    text:'このゲームの目的は「配信を自然に終わらせる」こと。コメントを読み、必要なものを拾って空気を整えよう。',
     cardTop:'17%',
     arrow:'down'
   },
@@ -8402,15 +8678,15 @@ const V101_TUTORIAL_STEPS=[
   },
   {
     selector:'#ending',
-    title:'ここが終了。',
-    text:'押すと 3 → 2 → 1。その直後に必ずイベントが起きる。',
+    title:'FINAL WINDOWで「終了」！',
+    text:'終われる空気が整ったらFINAL WINDOWへ。そこで「終了」を押し切れたら脱出成功！',
     cardTop:'20%',
     arrow:'down'
   },
   {
     rect:()=>({left:innerWidth*.05,top:125,width:innerWidth*.90,height:68}),
-    title:'CURRENT EVENT',
-    text:'いま起きているイベントはここ。まずは表示されたイベントを処理しよう。',
+    title:'イベントが来たら対応。',
+    text:'「何が起きた」「何をする」が表示される。説明を読んでからOKを押せば大丈夫。',
     cardTop:'27%',
     arrow:'up'
   },
@@ -8562,7 +8838,18 @@ function v126RefreshLineMicNotice(){
 
 function initGameIntro(){
   v126RefreshLineMicNotice();
-  $('#v101Start')?.addEventListener('click',()=>{v126RefreshLineMicNotice();v116ShowModeSelect();});
+  $('#v101Start')?.addEventListener('click',()=>{
+    v126RefreshLineMicNotice();
+    const b=$('#v2136Briefing');
+    if(b){b.hidden=false;requestAnimationFrame(()=>b.classList.add('show'));}
+    else v116ShowModeSelect();
+  });
+  $('#v2136BriefingOk')?.addEventListener('click',()=>{
+    const b=$('#v2136Briefing');
+    if(!b){v116ShowModeSelect();return;}
+    b.classList.remove('show');
+    setTimeout(()=>{b.hidden=true;v116ShowModeSelect();},160);
+  });
   $('#v116KeyboardMode')?.addEventListener('click',()=>v116SetPlayMode('keyboard'));
   $('#v116VoiceMode')?.addEventListener('click',v126ChooseVoiceMode);
   document.querySelectorAll('[data-v101-next]').forEach(btn=>btn.addEventListener('click',()=>v101ShowPage(v101PageIndex+1)));
