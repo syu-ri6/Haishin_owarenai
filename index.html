@@ -3253,7 +3253,7 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.141</div>
+</head><body><div class="app" id="app"><div class="buildMark">v2.143</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3293,8 +3293,7 @@ body.postMiniGameInputLock .quickActions{
       <div><b>みく</b><span>名前呼んでー！</span></div>
     </div>
 
-    <button class="v101MainBtn" id="v101Start" type="button"
-onclick="var m=document.getElementById('v116ModeSelect');if(m){m.classList.add('show');m.setAttribute('aria-hidden','false');}return false;">▶ START</button>
+    <button class="v101MainBtn" id="v101Start" type="button">▶ START</button>
     <div class="v101SubButtons">
       <button id="v142SettingsBtn" type="button">設定</button>
       <button id="v142CreditsBtn" type="button">クレジット</button>
@@ -9283,5 +9282,38 @@ function startInitialRoomComments(){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',runDevCheck,{once:true});else runDevCheck();
 })();
 </script>
+
+
+<script id="v143-start-hardening">
+(function(){
+  function openPlayStyle(){
+    var m=document.getElementById('v116ModeSelect');
+    if(!m)return;
+    m.classList.add('show');
+    m.setAttribute('aria-hidden','false');
+    m.style.display='flex';
+    m.style.pointerEvents='auto';
+  }
+  function bindStart(){
+    var b=document.getElementById('v101Start');
+    if(!b || b.dataset.v143Bound==='1')return;
+    b.dataset.v143Bound='1';
+    b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();openPlayStyle();},{passive:false});
+    b.addEventListener('pointerup',function(e){e.preventDefault();e.stopPropagation();openPlayStyle();},{passive:false});
+    b.addEventListener('touchend',function(e){e.preventDefault();e.stopPropagation();openPlayStyle();},{passive:false});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bindStart,{once:true});else bindStart();
+  // Last-resort delegated capture for iOS/WebView hit-test oddities.
+  document.addEventListener('click',function(e){
+    var t=e.target && e.target.closest ? e.target.closest('#v101Start') : null;
+    if(t){e.preventDefault();openPlayStyle();}
+  },true);
+  window.v143OpenPlayStyle=openPlayStyle;
+})();
+</script>
+<style id="v143-start-hardening-style">
+#v116ModeSelect.show{display:flex!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important;}
+#v101Start{pointer-events:auto!important;touch-action:manipulation!important;}
+</style>
 
 </body></html>
