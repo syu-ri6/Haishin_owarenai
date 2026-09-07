@@ -9415,7 +9415,7 @@ function startInitialRoomComments(){
 </style>
 
 <style id="v146-prologue-stable-style">
-/* Ver.2.146: stable iPhone prologue controls + compact title fit */
+/* Ver.2.147: stable iPhone prologue controls + compact title fit */
 #gameIntro .v101Page{pointer-events:none!important;}
 #gameIntro .v101Page.active{pointer-events:auto!important;}
 #gameIntro .v101Page.active .v101NextBtn,
@@ -9502,6 +9502,74 @@ function startInitialRoomComments(){
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
   else init();
+})();
+</script>
+
+
+<style id="v147-tutorial-touch-fix">
+#v101TutorialCard,#v101TutorialNext,#v101TutorialSkip{
+  pointer-events:auto!important;
+}
+#v101TutorialNext,#v101TutorialSkip{
+  touch-action:manipulation!important;
+  -webkit-tap-highlight-color:transparent;
+  position:relative;
+  z-index:20;
+}
+</style>
+<script id="v147-tutorial-stable-controller">
+(function(){
+  'use strict';
+  function finish(){
+    if(typeof closeGameIntro==='function') closeGameIntro();
+    else {
+      var t=document.getElementById('v101Tutorial');
+      if(t)t.hidden=true;
+      if(typeof v101StartGameOnce==='function')v101StartGameOnce();
+    }
+  }
+  function advance(){
+    try{
+      if(typeof v101TutorialIndex==='undefined' || typeof V101_TUTORIAL_STEPS==='undefined'){
+        finish(); return;
+      }
+      if(v101TutorialIndex < V101_TUTORIAL_STEPS.length-1){
+        v101TutorialIndex++;
+        if(typeof v101RenderTutorial==='function')v101RenderTutorial();
+      }else{
+        finish();
+      }
+    }catch(err){
+      console.error('[v147 tutorial]',err);
+      finish();
+    }
+  }
+  function cleanBind(id,action){
+    var old=document.getElementById(id);
+    if(!old)return;
+    var b=old.cloneNode(true);
+    old.replaceWith(b);
+    b.style.pointerEvents='auto';
+    b.style.touchAction='manipulation';
+    var locked=false;
+    function run(e){
+      if(e){e.preventDefault();e.stopPropagation();}
+      if(locked)return;
+      locked=true;
+      action();
+      setTimeout(function(){locked=false;},220);
+    }
+    b.addEventListener('pointerup',run,{passive:false});
+    b.addEventListener('touchend',run,{passive:false});
+    b.addEventListener('click',run,{passive:false});
+  }
+  function bind(){
+    cleanBind('v101TutorialNext',advance);
+    cleanBind('v101TutorialSkip',finish);
+    window.__v147Tutorial={advance:advance,finish:finish};
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
 })();
 </script>
 
