@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.138 START BUTTON RESTORE</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.139 RESTORE KNOWN-GOOD START FLOW</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -3060,48 +3060,12 @@ body.postMiniGameInputLock .quickActions{
 </style>
 
 
-<style id="v2135-playtest-ux-pass">
-/* ① START briefing: separate screen so it never overlaps the title */
-.v2136Briefing{
-  position:absolute;inset:0;z-index:3600;
-  display:grid;place-items:center;
-  padding:calc(62px + env(safe-area-inset-top)) 18px calc(22px + env(safe-area-inset-bottom));
-  background:rgba(8,9,31,.80);
-  backdrop-filter:blur(9px);-webkit-backdrop-filter:blur(9px);
-  opacity:0;transition:.16s opacity;
-}
-.v2136Briefing[hidden]{display:none!important}
-.v2136Briefing.show{opacity:1}
-.v2136BriefingCard{
-  width:min(88vw,360px);
-  padding:20px 18px 18px;
-  border-radius:22px;
-  text-align:center;
-  color:#fff;
-  background:linear-gradient(180deg,rgba(34,29,83,.98),rgba(15,16,48,.99));
-  border:2px solid rgba(166,122,255,.92);
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.13),0 8px 0 rgba(42,27,95,.72),0 24px 50px rgba(4,5,24,.48),0 0 28px rgba(156,91,255,.24);
-}
-.v2136BriefingCard>small{color:#77e8ff;font-size:9px;font-weight:1000;letter-spacing:.18em}
-.v2136BriefingCard h2{margin:7px 0 9px;font-size:22px;line-height:1.15;color:#ff79bd}
-.v2136BriefingCard p{margin:0;font-size:13px;line-height:1.7;font-weight:750}
-.v2136BriefingCard p strong{color:#ffd86c}
-.v2136Steps{display:grid;gap:4px;margin:14px auto;padding:11px 12px;border-radius:15px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.09)}
-.v2136Steps span{font-size:12px;font-weight:900}
-.v2136Steps i{font-size:9px;color:#9e8aff;font-style:normal;line-height:1}
-.v2136BriefingCard>b{display:block;color:#fff;font-size:13px;margin:2px 0 13px}
-#v2136BriefingOk{
-  width:100%;height:48px;border:0;border-radius:15px;
-  background:linear-gradient(180deg,#ff72b7,#ef438e);
-  color:#fff;font-size:14px;font-weight:1000;
-  box-shadow:inset 0 2px 0 rgba(255,255,255,.28),0 5px 0 #9e285f;
-}
-#v2136BriefingOk:active{transform:translateY(3px);box-shadow:0 2px 0 #9e285f}
 
-/* Event guide line breaks */
+<style id="v2139-safe-ux-only">
+/* Keep event explanation formatting */
 .eventBanner.confirmMode #eventDesc{white-space:pre-line!important;line-height:1.55!important}
 
-/* Preserve the latest requested prologue comment readability */
+/* Preserve requested prologue comment readability */
 .v101Story .storyComments .v101CommentsHead{
   font-size:13px!important;line-height:1.2!important;letter-spacing:.16em!important;padding-bottom:6px!important;
 }
@@ -3126,66 +3090,7 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-
-<style id="v2137-iphone-start-touch-fix">
-#v101Start,#v2136BriefingOk{
-  position:relative!important;
-  z-index:50!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-user-select:none!important;
-  user-select:none!important;
-  -webkit-touch-callout:none!important;
-}
-#v101Start *,#v2136BriefingOk *{
-  pointer-events:none!important;
-  -webkit-user-select:none!important;
-  user-select:none!important;
-}
-</style>
-
-
-<style id="v2138-start-button-restore">
-/* Ver.2.138: START button is always visible in a dedicated slot above the 3 sub-buttons. */
-.v101Title #v101Start{
-  display:block!important;
-  visibility:visible!important;
-  opacity:1!important;
-  position:absolute!important;
-  left:50%!important;
-  right:auto!important;
-  top:auto!important;
-  bottom:calc(50px + env(safe-area-inset-bottom))!important;
-  transform:translateX(-50%)!important;
-  width:min(84vw,365px)!important;
-  height:48px!important;
-  margin:0!important;
-  z-index:120!important;
-  pointer-events:auto!important;
-  touch-action:manipulation!important;
-  -webkit-user-select:none!important;
-  user-select:none!important;
-  -webkit-touch-callout:none!important;
-}
-.v101Title .v101SubButtons{
-  bottom:calc(8px + env(safe-area-inset-bottom))!important;
-  z-index:110!important;
-}
-.v101Title .titleComments{
-  bottom:calc(112px + env(safe-area-inset-bottom))!important;
-}
-@media(max-height:720px){
-  .v101Title #v101Start{
-    bottom:calc(47px + env(safe-area-inset-bottom))!important;
-    height:44px!important;
-  }
-  .v101Title .titleComments{
-    bottom:calc(101px + env(safe-area-inset-bottom))!important;
-  }
-}
-</style>
-
-</head><body><div class="app" id="app"><div class="buildMark">v2.138</div>
+</head><body><div class="app" id="app"><div class="buildMark">v2.139</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3297,9 +3202,10 @@ body.postMiniGameInputLock .quickActions{
   
 <div class="v116ModeSelect" id="v116ModeSelect" aria-hidden="true">
   <div class="v116ModeCard">
-    <small>PLAY STYLE</small>
-    <h2>どうやって返す？</h2>
-    <p>ゲーム内容は同じ。コメントへの自由回答だけ、入力方法を選べるよ。</p>
+    <small>配信終了脱出ゲーム / PLAY STYLE</small>
+    <h2>配信を終わらせて脱出しよう！</h2>
+    <p><b>コメントを読む → イベントに対応 → 終われる空気を作る。</b><br>FINAL WINDOWで「終了」を押せたら脱出成功！</p>
+    <p>まずはコメントへの自由回答方法を選んでね。</p>
     <div class="v116ModeButtons">
       <button id="v116KeyboardMode" type="button"><b>⌨️</b>キーボードで遊ぶ<span>文字を打ってコメントに返す</span></button>
       <button id="v116VoiceMode" type="button"><b>🎙</b>マイクで遊ぶ<span>喋った内容を文字にして返す</span></button>
@@ -3331,22 +3237,6 @@ body.postMiniGameInputLock .quickActions{
   <button id="introSkip" type="button" hidden aria-hidden="true"></button>
 </div>
 
-<div class="v2136Briefing" id="v2136Briefing" hidden>
-  <div class="v2136BriefingCard">
-    <small>MISSION BRIEFING</small>
-    <h2>配信終了脱出ゲーム</h2>
-    <p>あなたは配信者。<br>コメントやイベントをさばきながら、<br><strong>「終われる空気」</strong>を作ろう。</p>
-    <div class="v2136Steps">
-      <span>💬 コメントを読む</span>
-      <i>↓</i>
-      <span>⚡ イベントに対応</span>
-      <i>↓</i>
-      <span>🚪 FINAL WINDOWで終了</span>
-    </div>
-    <b>終了を押し切れたら、脱出成功！</b>
-    <button id="v2136BriefingOk" type="button">わかった！ ▶</button>
-  </div>
-</div>
 <div class="v101Tutorial" id="v101Tutorial" hidden>
   <div class="v101TutorialSpot" id="v101TutorialSpot"></div>
   <div class="v101TutorialArrow" id="v101TutorialArrow">↓</div>
@@ -8897,35 +8787,7 @@ function v126RefreshLineMicNotice(){
 
 function initGameIntro(){
   v126RefreshLineMicNotice();
-
-  let v2138StartLock=false;
-  const v2138OpenBriefing=()=>{
-    if(v2138StartLock)return;
-    v2138StartLock=true;
-    const b=$('#v2136Briefing');
-    if(b){
-      b.hidden=false;
-      requestAnimationFrame(()=>b.classList.add('show'));
-    }else{
-      v116ShowModeSelect();
-    }
-    setTimeout(()=>{v2138StartLock=false;},350);
-  };
-  const startBtn=$('#v101Start');
-  if(startBtn){
-    startBtn.addEventListener('click',v2138OpenBriefing,{passive:true});
-    startBtn.addEventListener('touchend',(e)=>{e.preventDefault();v2138OpenBriefing();},{passive:false});
-  }
-
-  const briefingOk=$('#v2136BriefingOk');
-  if(briefingOk){
-    briefingOk.addEventListener('click',()=>{
-      const b=$('#v2136Briefing');
-      if(!b){v116ShowModeSelect();return;}
-      b.classList.remove('show');
-      setTimeout(()=>{b.hidden=true;v116ShowModeSelect();},160);
-    });
-  }
+  $('#v101Start')?.addEventListener('click',()=>{v126RefreshLineMicNotice();v116ShowModeSelect();});
   $('#v116KeyboardMode')?.addEventListener('click',()=>v116SetPlayMode('keyboard'));
   $('#v116VoiceMode')?.addEventListener('click',v126ChooseVoiceMode);
   document.querySelectorAll('[data-v101-next]').forEach(btn=>btn.addEventListener('click',()=>v101ShowPage(v101PageIndex+1)));
