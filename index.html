@@ -9414,100 +9414,95 @@ function startInitialRoomComments(){
 #v116ModeSelect .v116ModeButtons button *{pointer-events:none!important;}
 </style>
 
-
-
-<script id="v145-unified-input-hardening">
-(function(){
-  const lastTap=new WeakMap();
-  function once(el,fn,e){
-    if(!el)return;
-    const now=Date.now(), prev=lastTap.get(el)||0;
-    if(now-prev<420){
-      if(e){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}
-      return;
-    }
-    lastTap.set(el,now);
-    if(e){e.preventDefault();e.stopPropagation();if(e.stopImmediatePropagation)e.stopImmediatePropagation();}
-    try{fn();}catch(err){console.error('[v2.145 input]',err);}
-  }
-  function introAction(el){
-    if(el.matches('[data-v101-next]')) return ()=>{
-      const pages=[...document.querySelectorAll('#gameIntro .v101Page')];
-      let cur=pages.findIndex(p=>p.classList.contains('active'));
-      if(cur<0)cur=0;
-      if(typeof v101ShowPage==='function')v101ShowPage(Math.min(pages.length-1,cur+1));
-      else pages.forEach((p,i)=>p.classList.toggle('active',i===Math.min(pages.length-1,cur+1)));
-    };
-    if(el.id==='v101Enter') return ()=>{
-      if(typeof v101StartTutorial==='function')v101StartTutorial();
-      else document.getElementById('gameIntro')?.classList.add('hidden');
-    };
-    if(el.id==='v101TutorialNext') return ()=>{
-      if(typeof v101TutorialIndex!=='undefined' && typeof V101_TUTORIAL_STEPS!=='undefined'){
-        if(v101TutorialIndex<V101_TUTORIAL_STEPS.length-1){v101TutorialIndex++;v101RenderTutorial();}
-        else closeGameIntro();
-      }
-    };
-    if(el.id==='v101TutorialSkip') return ()=>{ if(typeof closeGameIntro==='function')closeGameIntro(); };
-    if(el.id==='introNext') return ()=>{
-      const pages=[...document.querySelectorAll('#gameIntro .v101Page')];
-      let cur=pages.findIndex(p=>p.classList.contains('active'));
-      if(typeof v101ShowPage==='function')v101ShowPage(Math.min(pages.length-1,(cur<0?0:cur)+1));
-    };
-    if(el.id==='introSkip') return ()=>{ if(typeof closeGameIntro==='function')closeGameIntro(); };
-    return null;
-  }
-  function handle(e){
-    const el=e.target?.closest?.('[data-v101-next],#v101Enter,#v101TutorialNext,#v101TutorialSkip,#introNext,#introSkip');
-    if(!el)return;
-    const fn=introAction(el);
-    if(fn)once(el,fn,e);
-  }
-  ['pointerup','touchend','click'].forEach(type=>document.addEventListener(type,handle,{capture:true,passive:false}));
-
-  // Safety: never let a visible intro page keep an invisible overlay above its controls.
-  function sanitizeIntroHitAreas(){
-    document.querySelectorAll('#gameIntro .v101Page.active button').forEach(b=>{
-      b.style.pointerEvents='auto';
-      b.style.touchAction='manipulation';
-      b.style.position=b.style.position||'absolute';
-      b.style.zIndex='30';
-    });
-  }
-  new MutationObserver(sanitizeIntroHitAreas).observe(document.getElementById('gameIntro')||document.body,{attributes:true,subtree:true,attributeFilter:['class']});
-  sanitizeIntroHitAreas();
-  window.__v145InputHardening=true;
-})();
-</script>
-<style id="v145-prologue-compact-style">
-/* iPhone: keep the prologue readable without letting LIVE COMMENTS swallow the screen. */
-#gameIntro .v101Story .storyComments{
-  left:20px!important;
-  right:20px!important;
-  bottom:calc(49px + env(safe-area-inset-bottom))!important;
-  padding:6px 8px!important;
-  border-radius:11px!important;
-  max-height:29vh!important;
-  overflow:hidden!important;
-}
-#gameIntro .v101Story .storyComments .v101CommentsHead{
-  font-size:6.4px!important;
-  line-height:1.1!important;
-  margin-bottom:2px!important;
-}
-#gameIntro .v101Story .storyComments>div:not(.v101CommentsHead){
-  padding:3px 5px!important;
-  min-height:0!important;
-  gap:6px!important;
-  font-size:7px!important;
-  line-height:1.15!important;
-}
-#gameIntro .v101Story .storyComments b{min-width:27px!important;}
-#gameIntro .v101Story .storyComments span{line-height:1.15!important;}
-#gameIntro .v101NextBtn,#gameIntro #v101Enter{
+<style id="v146-prologue-stable-style">
+/* Ver.2.146: stable iPhone prologue controls + compact title fit */
+#gameIntro .v101Page{pointer-events:none!important;}
+#gameIntro .v101Page.active{pointer-events:auto!important;}
+#gameIntro .v101Page.active .v101NextBtn,
+#gameIntro .v101Page.active #v101Enter{
   pointer-events:auto!important;
   touch-action:manipulation!important;
-  z-index:40!important;
+  -webkit-tap-highlight-color:rgba(255,255,255,.08)!important;
+  z-index:5000!important;
+}
+#gameIntro .v101Story .storyComments{
+  left:20px!important;right:20px!important;
+  bottom:calc(62px + env(safe-area-inset-bottom))!important;
+  padding:6px 8px!important;border-radius:11px!important;
+  max-height:24vh!important;overflow:hidden!important;
+}
+#gameIntro .v101Story .storyComments .v101CommentsHead{font-size:6.4px!important;line-height:1.1!important;margin-bottom:3px!important;}
+#gameIntro .v101Story .storyComments>div:not(.v101CommentsHead){padding:4px 5px!important;font-size:7.7px!important;line-height:1.15!important;gap:5px!important;min-height:0!important;}
+#gameIntro .v101Story .storyComments b{min-width:29px!important;}
+#gameIntro .v101NextBtn{bottom:calc(14px + env(safe-area-inset-bottom))!important;height:42px!important;}
+@media (max-height:760px){
+  #gameIntro .v101Logo{top:calc(62px + env(safe-area-inset-top))!important;transform:translateX(-50%) scale(.90)!important;transform-origin:top center!important;}
+  #gameIntro .titleAvatar{transform:translateX(-50%) scale(.91)!important;transform-origin:bottom center!important;}
+  #gameIntro .v101Title .v101Comments{margin-bottom:8px!important;}
+  #gameIntro .v101MainBtn{height:50px!important;}
+  #gameIntro .v101SubButtons{margin-top:7px!important;}
+  #gameIntro .v101SubButtons button{height:31px!important;}
 }
 </style>
+<script id="v146-prologue-stable-controller">
+(function(){
+  'use strict';
+  function pages(){ return Array.from(document.querySelectorAll('#gameIntro .v101Page')); }
+  function currentIndex(){
+    const p=pages();
+    const i=p.findIndex(el=>el.classList.contains('active'));
+    return i<0?0:i;
+  }
+  function show(index){
+    const p=pages();
+    if(!p.length)return;
+    const n=Math.max(0,Math.min(p.length-1,index));
+    p.forEach((el,i)=>{
+      const on=i===n;
+      el.classList.toggle('active',on);
+      el.setAttribute('aria-hidden',on?'false':'true');
+    });
+    try{ if(typeof v101PageIndex!=='undefined') v101PageIndex=n; }catch(_){ }
+  }
+  function next(){ show(currentIndex()+1); }
+  function enter(){
+    if(typeof v101StartTutorial==='function') v101StartTutorial();
+    else {
+      document.getElementById('gameIntro')?.classList.add('hidden');
+      if(typeof v101StartGameOnce==='function') v101StartGameOnce();
+    }
+  }
+  function bindClean(selector,action){
+    document.querySelectorAll(selector).forEach(old=>{
+      const b=old.cloneNode(true); // removes every legacy listener
+      old.replaceWith(b);
+      let locked=false;
+      const run=(e)=>{
+        if(e){ e.preventDefault(); e.stopPropagation(); }
+        if(locked)return;
+        locked=true;
+        action();
+        setTimeout(()=>locked=false,180);
+      };
+      b.addEventListener('click',run,{passive:false});
+      // iOS Safari fallback. If touchend fires, the later click is deduped by locked.
+      b.addEventListener('touchend',run,{passive:false});
+    });
+  }
+  function init(){
+    bindClean('#gameIntro [data-v101-next]',next);
+    bindClean('#gameIntro #v101Enter',enter);
+    // Keep hidden legacy controls harmless and deterministic.
+    bindClean('#gameIntro #introNext',next);
+    bindClean('#gameIntro #introSkip',()=>{
+      if(typeof closeGameIntro==='function')closeGameIntro();
+    });
+    show(currentIndex());
+    window.__v146Intro={next,show,currentIndex};
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();
+</script>
+
 </body></html>
