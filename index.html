@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.137 IPHONE START TOUCH FIX</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.138 START BUTTON RESTORE</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -3144,7 +3144,48 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.137</div>
+
+<style id="v2138-start-button-restore">
+/* Ver.2.138: START button is always visible in a dedicated slot above the 3 sub-buttons. */
+.v101Title #v101Start{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  position:absolute!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:calc(50px + env(safe-area-inset-bottom))!important;
+  transform:translateX(-50%)!important;
+  width:min(84vw,365px)!important;
+  height:48px!important;
+  margin:0!important;
+  z-index:120!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+.v101Title .v101SubButtons{
+  bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  z-index:110!important;
+}
+.v101Title .titleComments{
+  bottom:calc(112px + env(safe-area-inset-bottom))!important;
+}
+@media(max-height:720px){
+  .v101Title #v101Start{
+    bottom:calc(47px + env(safe-area-inset-bottom))!important;
+    height:44px!important;
+  }
+  .v101Title .titleComments{
+    bottom:calc(101px + env(safe-area-inset-bottom))!important;
+  }
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.138</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3184,8 +3225,7 @@ body.postMiniGameInputLock .quickActions{
       <div><b>みく</b><span>名前呼んでー！</span></div>
     </div>
 
-    <button class="v101MainBtn" id="v101Start" type="button"
-onclick="var b=document.getElementById('v2136Briefing');if(b){b.hidden=false;requestAnimationFrame(function(){b.classList.add('show')});}return false;">▶ START</button>
+    <button class="v101MainBtn" id="v101Start" type="button">▶ START</button>
     <div class="v101SubButtons">
       <button type="button">設定</button>
       <button type="button">クレジット</button>
@@ -3304,8 +3344,7 @@ onclick="var b=document.getElementById('v2136Briefing');if(b){b.hidden=false;req
       <span>🚪 FINAL WINDOWで終了</span>
     </div>
     <b>終了を押し切れたら、脱出成功！</b>
-    <button id="v2136BriefingOk" type="button"
-onclick="var b=document.getElementById('v2136Briefing');if(b){b.classList.remove('show');setTimeout(function(){b.hidden=true;if(typeof v116ShowModeSelect==='function')v116ShowModeSelect();},160);}return false;">わかった！ ▶</button>
+    <button id="v2136BriefingOk" type="button">わかった！ ▶</button>
   </div>
 </div>
 <div class="v101Tutorial" id="v101Tutorial" hidden>
@@ -8858,6 +8897,35 @@ function v126RefreshLineMicNotice(){
 
 function initGameIntro(){
   v126RefreshLineMicNotice();
+
+  let v2138StartLock=false;
+  const v2138OpenBriefing=()=>{
+    if(v2138StartLock)return;
+    v2138StartLock=true;
+    const b=$('#v2136Briefing');
+    if(b){
+      b.hidden=false;
+      requestAnimationFrame(()=>b.classList.add('show'));
+    }else{
+      v116ShowModeSelect();
+    }
+    setTimeout(()=>{v2138StartLock=false;},350);
+  };
+  const startBtn=$('#v101Start');
+  if(startBtn){
+    startBtn.addEventListener('click',v2138OpenBriefing,{passive:true});
+    startBtn.addEventListener('touchend',(e)=>{e.preventDefault();v2138OpenBriefing();},{passive:false});
+  }
+
+  const briefingOk=$('#v2136BriefingOk');
+  if(briefingOk){
+    briefingOk.addEventListener('click',()=>{
+      const b=$('#v2136Briefing');
+      if(!b){v116ShowModeSelect();return;}
+      b.classList.remove('show');
+      setTimeout(()=>{b.hidden=true;v116ShowModeSelect();},160);
+    });
+  }
   $('#v116KeyboardMode')?.addEventListener('click',()=>v116SetPlayMode('keyboard'));
   $('#v116VoiceMode')?.addEventListener('click',v126ChooseVoiceMode);
   document.querySelectorAll('[data-v101-next]').forEach(btn=>btn.addEventListener('click',()=>v101ShowPage(v101PageIndex+1)));
