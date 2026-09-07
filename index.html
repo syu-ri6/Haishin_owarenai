@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.136 BRIEFING LAYOUT FIX</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.137 IPHONE START TOUCH FIX</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -3126,7 +3126,25 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.136</div>
+
+<style id="v2137-iphone-start-touch-fix">
+#v101Start,#v2136BriefingOk{
+  position:relative!important;
+  z-index:50!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+#v101Start *,#v2136BriefingOk *{
+  pointer-events:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.137</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3166,7 +3184,8 @@ body.postMiniGameInputLock .quickActions{
       <div><b>みく</b><span>名前呼んでー！</span></div>
     </div>
 
-    <button class="v101MainBtn" id="v101Start" type="button">▶ START</button>
+    <button class="v101MainBtn" id="v101Start" type="button"
+onclick="var b=document.getElementById('v2136Briefing');if(b){b.hidden=false;requestAnimationFrame(function(){b.classList.add('show')});}return false;">▶ START</button>
     <div class="v101SubButtons">
       <button type="button">設定</button>
       <button type="button">クレジット</button>
@@ -3285,7 +3304,8 @@ body.postMiniGameInputLock .quickActions{
       <span>🚪 FINAL WINDOWで終了</span>
     </div>
     <b>終了を押し切れたら、脱出成功！</b>
-    <button id="v2136BriefingOk" type="button">わかった！ ▶</button>
+    <button id="v2136BriefingOk" type="button"
+onclick="var b=document.getElementById('v2136Briefing');if(b){b.classList.remove('show');setTimeout(function(){b.hidden=true;if(typeof v116ShowModeSelect==='function')v116ShowModeSelect();},160);}return false;">わかった！ ▶</button>
   </div>
 </div>
 <div class="v101Tutorial" id="v101Tutorial" hidden>
@@ -8838,18 +8858,6 @@ function v126RefreshLineMicNotice(){
 
 function initGameIntro(){
   v126RefreshLineMicNotice();
-  $('#v101Start')?.addEventListener('click',()=>{
-    v126RefreshLineMicNotice();
-    const b=$('#v2136Briefing');
-    if(b){b.hidden=false;requestAnimationFrame(()=>b.classList.add('show'));}
-    else v116ShowModeSelect();
-  });
-  $('#v2136BriefingOk')?.addEventListener('click',()=>{
-    const b=$('#v2136Briefing');
-    if(!b){v116ShowModeSelect();return;}
-    b.classList.remove('show');
-    setTimeout(()=>{b.hidden=true;v116ShowModeSelect();},160);
-  });
   $('#v116KeyboardMode')?.addEventListener('click',()=>v116SetPlayMode('keyboard'));
   $('#v116VoiceMode')?.addEventListener('click',v126ChooseVoiceMode);
   document.querySelectorAll('[data-v101-next]').forEach(btn=>btn.addEventListener('click',()=>v101ShowPage(v101PageIndex+1)));
