@@ -9275,7 +9275,7 @@ function startInitialRoomComments(){
     const lines=['DEV BUTTON SELF CHECK','buttons: '+all.length,'duplicate IDs: '+(dup.length?dup.join(', '):'0'),'required missing: '+(missing.length?missing.join(', '):'0'),'possible orphan buttons: '+orphan.length];
     if(orphan.length) lines.push(orphan.slice(0,30).join('\n'));
     const ok=!dup.length&&!missing.length&&!orphan.length;
-    console.group('[Ver.2.142] Button Self Check');console.log(lines.join('\n'));console.groupEnd();
+    console.group('[Ver.2.144] Button Self Check');console.log(lines.join('\n'));console.groupEnd();
     if(panel){panel.innerHTML='<b>'+(ok?'✅ PASS':'⚠️ CHECK')+'</b>\n'+lines.join('\n');panel.classList.add('show');}
     window.__v142ButtonCheck={ok,duplicateIds:dup,missingRequired:missing,possibleOrphans:orphan,totalButtons:all.length};
   }
@@ -9314,6 +9314,104 @@ function startInitialRoomComments(){
 <style id="v143-start-hardening-style">
 #v116ModeSelect.show{display:flex!important;pointer-events:auto!important;visibility:visible!important;opacity:1!important;}
 #v101Start{pointer-events:auto!important;touch-action:manipulation!important;}
+</style>
+
+
+<script id="v144-mode-button-hardening">
+(function(){
+  var lastRun=0;
+
+  function forcePageOne(){
+    try{
+      if(typeof v101ShowPage==='function'){
+        v101ShowPage(1);
+        return;
+      }
+    }catch(err){ console.warn('[v2.144] v101ShowPage fallback',err); }
+    var pages=document.querySelectorAll('#gameIntro .v101Page');
+    pages.forEach(function(p,i){p.classList.toggle('active',i===1);});
+  }
+
+  function hideMode(){
+    var m=document.getElementById('v116ModeSelect');
+    if(!m)return;
+    m.classList.remove('show');
+    m.setAttribute('aria-hidden','true');
+    m.style.display='none';
+    m.style.pointerEvents='none';
+  }
+
+  function choose(mode,e){
+    if(e){e.preventDefault();e.stopPropagation();}
+    var now=Date.now();
+    if(now-lastRun<250)return;
+    lastRun=now;
+
+    if(mode==='voice'){
+      try{
+        if(typeof v127DetectInAppBrowser==='function' && v127DetectInAppBrowser()){
+          if(typeof v126ChooseVoiceMode==='function'){
+            v126ChooseVoiceMode();
+            return;
+          }
+        }
+      }catch(err){ console.warn('[v2.144] voice browser check fallback',err); }
+    }
+
+    try{
+      if(typeof v116SetPlayMode==='function'){
+        v116SetPlayMode(mode);
+      }else{
+        window.v116PlayMode=(mode==='voice'?'voice':'keyboard');
+        hideMode();
+        forcePageOne();
+      }
+    }catch(err){
+      console.warn('[v2.144] play mode fallback',err);
+      hideMode();
+      forcePageOne();
+    }
+
+    // Verify that the overlay actually disappeared. If an older handler/CSS put it back, force the transition.
+    setTimeout(function(){
+      var m=document.getElementById('v116ModeSelect');
+      var page1=document.querySelector('#gameIntro .v101Page[data-v101-page="1"]');
+      if(m && (m.classList.contains('show') || getComputedStyle(m).display!=='none')) hideMode();
+      if(page1 && !page1.classList.contains('active')) forcePageOne();
+    },30);
+  }
+
+  function bind(){
+    var kb=document.getElementById('v116KeyboardMode');
+    var mic=document.getElementById('v116VoiceMode');
+    [[kb,'keyboard'],[mic,'voice']].forEach(function(pair){
+      var b=pair[0],mode=pair[1];
+      if(!b || b.dataset.v144Bound==='1')return;
+      b.dataset.v144Bound='1';
+      b.removeAttribute('onclick');
+      b.style.pointerEvents='auto';
+      b.style.touchAction='manipulation';
+      b.addEventListener('click',function(e){choose(mode,e);},{passive:false});
+      b.addEventListener('pointerup',function(e){choose(mode,e);},{passive:false});
+      b.addEventListener('touchend',function(e){choose(mode,e);},{passive:false});
+    });
+  }
+
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bind,{once:true});
+  else bind();
+
+  document.addEventListener('click',function(e){
+    var b=e.target && e.target.closest ? e.target.closest('#v116KeyboardMode,#v116VoiceMode') : null;
+    if(!b)return;
+    choose(b.id==='v116VoiceMode'?'voice':'keyboard',e);
+  },true);
+
+  window.v144ChoosePlayMode=choose;
+})();
+</script>
+<style id="v144-mode-button-hardening-style">
+#v116ModeSelect .v116ModeButtons button{pointer-events:auto!important;touch-action:manipulation!important;position:relative!important;z-index:2!important;}
+#v116ModeSelect .v116ModeButtons button *{pointer-events:none!important;}
 </style>
 
 </body></html>
