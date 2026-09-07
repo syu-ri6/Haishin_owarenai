@@ -2,7 +2,7 @@
 
 <html lang="ja"><head>
 <meta charset="UTF-8">
-<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.139 RESTORE KNOWN-GOOD START FLOW</title>
+<!-- Ver.2.20: right-side operation group parent moved upward only; size/design/function unchanged --><!-- Ver.2.24: premium polish on stable 5-button rail baseline --><meta charset="utf-8"/><meta content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,viewport-fit=cover,user-scalable=no" name="viewport"/><meta content="#f7ecff" name="theme-color"/><title>配信、終われません。Ver.2.140 CANONICAL TITLE INTERACTION</title>
 <style>
 :root{
   --ink:#f8f6ff;--pink:#ff3f97;--pink2:#ff79bd;--vio:#845dff;--cyan:#32d8e7;
@@ -3090,7 +3090,136 @@ body.postMiniGameInputLock .quickActions{
 }
 </style>
 
-</head><body><div class="app" id="app"><div class="buildMark">v2.139</div>
+
+<style id="v2140-title-canonical">
+/* Ver.2.140
+   Canonical title-screen interaction layer.
+   Decorative title elements never receive taps.
+   Only START and the three bottom utility buttons are interactive. */
+
+#gameIntro{
+  isolation:isolate!important;
+}
+
+/* The page itself is just a visual stage. */
+#gameIntro .v101Title{
+  display:none!important;
+  position:absolute!important;
+  inset:0!important;
+  padding:0!important;
+  overflow:hidden!important;
+  pointer-events:none!important;
+}
+#gameIntro .v101Title.active{
+  display:block!important;
+}
+
+/* Decorative / informational pieces must never sit on top of a button for hit testing. */
+#gameIntro .v101Title .v101Logo,
+#gameIntro .v101Title .v101Logo *,
+#gameIntro .v101Title .titleAvatar,
+#gameIntro .v101Title .titleComments,
+#gameIntro .v101Title .titleComments *,
+#gameIntro .v101Hud,
+#gameIntro .v101Hud *{
+  pointer-events:none!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+}
+
+/* Keep the current approved visual placement. */
+#gameIntro .v101Title .titleComments{
+  position:absolute!important;
+  left:50%!important;
+  bottom:calc(96px + env(safe-area-inset-bottom))!important;
+  transform:translateX(-50%)!important;
+  width:min(90vw,390px)!important;
+  z-index:20!important;
+}
+
+/* START owns an explicit hit area between comments and the utility row. */
+#gameIntro .v101Title #v101Start{
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  visibility:visible!important;
+  opacity:1!important;
+
+  position:absolute!important;
+  left:50%!important;
+  right:auto!important;
+  top:auto!important;
+  bottom:calc(47px + env(safe-area-inset-bottom))!important;
+  transform:translateX(-50%)!important;
+
+  width:min(82vw,360px)!important;
+  height:44px!important;
+  margin:0!important;
+
+  z-index:200!important;
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+  -webkit-touch-callout:none!important;
+
+  border:1.5px solid #ffa2d0!important;
+  border-radius:14px!important;
+  background:linear-gradient(180deg,#ff70b4,#ed478f)!important;
+  color:#fff!important;
+  font-size:13px!important;
+  font-weight:1000!important;
+  letter-spacing:.04em!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    0 4px 0 #9e285f,
+    0 0 18px rgba(255,83,173,.24)!important;
+}
+
+#gameIntro .v101Title #v101Start:active{
+  transform:translateX(-50%) translateY(2px)!important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.24),
+    0 2px 0 #9e285f!important;
+}
+
+/* Bottom utility row remains interactive, but cannot cover START. */
+#gameIntro .v101Title .v101SubButtons{
+  position:absolute!important;
+  left:50%!important;
+  bottom:calc(9px + env(safe-area-inset-bottom))!important;
+  transform:translateX(-50%)!important;
+  width:min(88vw,380px)!important;
+  display:grid!important;
+  grid-template-columns:repeat(3,1fr)!important;
+  gap:7px!important;
+  margin:0!important;
+  z-index:190!important;
+  pointer-events:none!important;
+}
+#gameIntro .v101Title .v101SubButtons button{
+  pointer-events:auto!important;
+  touch-action:manipulation!important;
+  -webkit-user-select:none!important;
+  user-select:none!important;
+}
+
+/* Short iPhone browser viewport */
+@media(max-height:720px){
+  #gameIntro .v101Title .titleComments{
+    bottom:calc(91px + env(safe-area-inset-bottom))!important;
+  }
+  #gameIntro .v101Title #v101Start{
+    bottom:calc(44px + env(safe-area-inset-bottom))!important;
+    height:41px!important;
+  }
+  #gameIntro .v101Title .v101SubButtons{
+    bottom:calc(8px + env(safe-area-inset-bottom))!important;
+  }
+}
+</style>
+
+</head><body><div class="app" id="app"><div class="buildMark">v2.140</div>
 <div class="bootError" hidden="" id="bootError">
 <div class="bootErrorCard">
 <h2>起動に失敗しました</h2>
@@ -3130,7 +3259,8 @@ body.postMiniGameInputLock .quickActions{
       <div><b>みく</b><span>名前呼んでー！</span></div>
     </div>
 
-    <button class="v101MainBtn" id="v101Start" type="button">▶ START</button>
+    <button class="v101MainBtn" id="v101Start" type="button"
+onclick="var m=document.getElementById('v116ModeSelect');if(m){m.classList.add('show');m.setAttribute('aria-hidden','false');}return false;">▶ START</button>
     <div class="v101SubButtons">
       <button type="button">設定</button>
       <button type="button">クレジット</button>
@@ -8787,7 +8917,7 @@ function v126RefreshLineMicNotice(){
 
 function initGameIntro(){
   v126RefreshLineMicNotice();
-  $('#v101Start')?.addEventListener('click',()=>{v126RefreshLineMicNotice();v116ShowModeSelect();});
+  // START is handled directly on the title button in Ver.2.140 to avoid iPhone hit-test/listener conflicts.
   $('#v116KeyboardMode')?.addEventListener('click',()=>v116SetPlayMode('keyboard'));
   $('#v116VoiceMode')?.addEventListener('click',v126ChooseVoiceMode);
   document.querySelectorAll('[data-v101-next]').forEach(btn=>btn.addEventListener('click',()=>v101ShowPage(v101PageIndex+1)));
